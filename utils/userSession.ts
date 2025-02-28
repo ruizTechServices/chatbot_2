@@ -1,3 +1,4 @@
+//utils/userSession.ts
 import { currentUser } from '@clerk/nextjs/server';
 import { createClient } from './supabase/server';
 import { getUserNamespace } from './pinecone/client';
