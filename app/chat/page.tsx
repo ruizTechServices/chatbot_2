@@ -1,23 +1,28 @@
-export default async function ChatPage() {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/openai/conversation`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+// app/chat/page.tsx
+"use client";
+
+import React from "react";
+
+export default function ChatPage() {
+  // Call your endpoint on mount or via a button click
+  React.useEffect(() => {
+    // or call this inside a button onClick
+    fetch("/api/openai/conversation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // This ensures cookies are sent to the server
+      credentials: "include",
       body: JSON.stringify({
-        messages: [
-          { role: "user", content: "Hello from my frontend!" }
-        ],
+        messages: [{ role: "user", content: "Hello who are you??!" }],
         model: "gpt-4o"
-      }),
-      cache: 'no-store'
-    });
-  
-    const data = await response.json();
-  
-    return (
-      <div>
-        <pre>{JSON.stringify(data, null, 2)}</pre>
-      </div>
-    );
-  }
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Chat response:", data);
+      })
+      .catch(console.error);
+  }, []);
+
+  return <div>Open console to see response!</div>;
+}

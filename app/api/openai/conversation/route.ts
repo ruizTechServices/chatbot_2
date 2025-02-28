@@ -1,3 +1,4 @@
+//app/api/openai/conversation/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { handleUserSession } from '@/utils/userSession';
 import { generateChatResponse } from '@/utils/openai/functions/chat';
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(chatResponse);
   } catch (error) {
+    console.error("Error in /conversation route:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
