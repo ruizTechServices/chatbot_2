@@ -14,6 +14,7 @@
     "@prisma/client": "^6.4.1",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.1",
+    "elevenlabs": "^1.52.0",
     "next": "15.2.0",
     "openai": "^4.85.4",
     "react": "^19.0.0",
