@@ -5,7 +5,7 @@ export default function Home() {
       <ul className="list-none space-y-2">
         <li className="flex items-center">
           <input type="checkbox" className="mr-2" id="auth" />
-          <label htmlFor="auth">Authentication</label>
+          <label htmlFor="auth">Clerk Authentication</label>
         </li>
         <li className="flex items-center">
           <input type="checkbox" className="mr-2" id="prisma" />
