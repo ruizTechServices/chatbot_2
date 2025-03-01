@@ -38,3 +38,13 @@ export async function handleUserSession() {
 
   return { supabaseUser, pineconeNamespace };
 }
+
+export async function handleUserSessionModded() {
+  const clerkUser = await currentUser();
+  const supabase = createClient(cookies());
+  
+  console.log("Clerk User:", clerkUser);
+  if (!clerkUser) throw new Error("No Clerk user found.");
+  // Check or create Supabase user
+  console.log("Supabase Client:", supabase);
+}

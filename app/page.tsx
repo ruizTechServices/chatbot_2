@@ -1,23 +1,26 @@
-'use client';
 import Link from "next/link";
-import { useAuth, useUser, UserButton } from "@clerk/nextjs";
-import { User } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { handleUserSessionModded } from "@/utils/userSession";
 
-export default function Home() {
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
+export default async function Home() {
+  const user = await currentUser();
+
+  if (!user) {
+    return (
+      <div className="p-6">
+        <Link href="/sign-in">Sign-In</Link>
+      </div>
+    );
+  }
+
+  await handleUserSessionModded();
 
   return (
     <div className="p-6">
-      {isSignedIn ? (
-        <div className="flex items-center gap-4">
-        <p>Welcome {user?.firstName ?? "User"}</p>
-        <UserButton />
+      <div className="flex items-center gap-4">
+        <p>Welcome {user.firstName ?? "User"}</p>
         <Link href="/chat">Chatbot</Link>
-        </div>
-      ) : (
-        <Link href="/sign-in">Sign-In</Link>
-      )}
+      </div>
       <h1 className="text-3xl font-bold underline mb-4">
         24HourGPT Features Checklist
       </h1>
