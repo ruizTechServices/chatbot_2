@@ -4,7 +4,11 @@ import { auth } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  res: NextResponse,
+  { params }: { params: { id: string } }
+) {
   try {
     const { userId } = await auth();
     
@@ -12,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { id } = await params;
+    const { id } = params;
     
     const conversation = await prisma.conversation.findUnique({
       where: { 
@@ -39,7 +43,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  res: NextResponse,
+  { params }: { params: { id: string } }
+) {
   try {
     const { userId } = await auth();
     
@@ -70,7 +78,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
     const { userId } = await auth();
     
@@ -83,7 +94,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     // First verify the conversation belongs to the user
     const conversation = await prisma.conversation.findUnique({
       where: { 
-        id: params.id,
+        id: context.params.id,
         userId
       },
     });
@@ -93,7 +104,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
     
     const updatedConversation = await prisma.conversation.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: { title },
     });
     
