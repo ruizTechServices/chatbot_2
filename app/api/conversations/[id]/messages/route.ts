@@ -4,7 +4,11 @@ import { auth } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  req: NextRequest,
+  res: NextResponse,
+  { params }: { params: { id: string } }
+) {
   try {
     const { userId } = await auth();
     
@@ -14,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     
     const { message, model } = await req.json();
     
-    const { id } = await params;
+    const { id } = params;
     
     // Verify that the conversation belongs to the user
     const conversation = await prisma.conversation.findFirst({
