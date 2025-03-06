@@ -5,8 +5,7 @@ import { auth } from '@clerk/nextjs/server';
 const prisma = new PrismaClient();
 
 export async function POST(
-  req: NextRequest,
-  res: NextResponse,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -16,7 +15,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { message, model } = await req.json();
+    const { message, model } = await request.json();
     
     const { id } = params;
     

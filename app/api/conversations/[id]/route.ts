@@ -4,12 +4,9 @@ import { auth } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
-// Define the type for route parameters
-type RouteParams = { params: { id: string } };
-
 export async function GET(
-  req: NextRequest,
-  params: RouteParams['params']
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -46,8 +43,8 @@ export async function GET(
 }
 
 export async function DELETE(
-  req: NextRequest,
-  params: RouteParams['params']
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -80,8 +77,8 @@ export async function DELETE(
 }
 
 export async function PATCH(
-  req: NextRequest,
-  params: RouteParams['params']
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -90,7 +87,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { title } = await req.json();
+    const { title } = await request.json();
     
     // First verify the conversation belongs to the user
     const conversation = await prisma.conversation.findUnique({
