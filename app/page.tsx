@@ -1,24 +1,76 @@
 'use client';
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth, useUser, UserButton } from "@clerk/nextjs";
 import { generateEmbeddings } from "@/utils/functions/generateEmbeddings";
-import { Response } from "openai/_shims/registry.mjs";
+
+// Define the ChecklistItem type
+type ChecklistItem = {
+  id: string;
+  name: string;
+  isChecked: boolean;
+  updatedAt: string;
+};
 
 export default function Home() {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-  const [result, setResult] = useState("");
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  console.log("User:", user);
-  console.log("isSignedIn:", isSignedIn);
-  console.log("User ID:", user?.id);
-  console.log("User First Name:", user?.firstName);
-  console.log("User Last Name:", user?.lastName);
-  console.log("User Email:", user?.emailAddresses[0]?.emailAddress);
+  // Fetch checklist items when component mounts
+  useEffect(() => {
+    const initializeChecklist = async () => {
+      try {
+        // First ensure the checklist is initialized
+        await fetch('/api/checklist/init');
+        
+        // Then fetch the current state
+        const response = await fetch('/api/checklist');
+        if (!response.ok) {
+          throw new Error('Failed to fetch checklist');
+        }
+        const data = await response.json();
+        setChecklistItems(data);
+      } catch (error) {
+        console.error('Error loading checklist:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const data = { Response };
-  console.log("Data:", data);
+    initializeChecklist();
+  }, []);
+
+  // Handle checkbox change
+  const handleCheckboxChange = async (name: string, isChecked: boolean) => {
+    try {
+      // Optimistically update UI
+      setChecklistItems(prev => 
+        prev.map(item => 
+          item.name === name ? { ...item, isChecked } : item
+        )
+      );
+      
+      // Send update to server
+      const response = await fetch('/api/checklist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, isChecked }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update checklist');
+        // If there's an error, we would revert the optimistic update here
+      }
+    } catch (error) {
+      console.error('Error updating checklist:', error);
+      // Revert optimistic update on error
+      const response = await fetch('/api/checklist');
+      const data = await response.json();
+      setChecklistItems(data);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -35,65 +87,33 @@ export default function Home() {
       <h1 className="text-3xl font-bold underline mb-4">
         24HourGPT Features Checklist
       </h1>
-      <ul className="list-none space-y-2">
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="auth" />
-          <label htmlFor="auth">Clerk Authentication</label>
-        </li>
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="prisma" />
-          <label htmlFor="prisma">Prisma ORM</label>
-        </li>
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="sqlite" />
-          <label htmlFor="sqlite">SQLite Database</label>
-        </li>
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="multitenancy" />
-          <label htmlFor="multitenancy">Multi-tenancy</label>
-        </li>
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="square" />
-          <label htmlFor="square">Square API Payments</label>
-        </li>
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="timer" />
-          <label htmlFor="timer">
-            24-hour Timer Countdown after $1 USD Payment
-          </label>
-        </li>
-        <li className="flex items-center">
-          <input type="checkbox" className="mr-2" id="pinecone" />
-          <label htmlFor="pinecone">Pinecone Integration</label>
-        </li>
-      </ul>
-      {/* <button
-        onClick={async () => {
-          const res = await generateEmbeddings("Hello world");
-          setResult(res); // Update the global result state
-          // console.log(res);
-        }}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Generate Embeddings
-      </button>
-      <div className="mt-4 w-[600px]">
-        <h2 className="text-2xl font-bold">Generated Embeddings:</h2>
-        <div className="overflow-x-auto overflow-y-scroll flex flex-col items-center h-[400px]">
-          <div className="w-[600px] bg-gray-100 p-4 rounded h-[400px]">
-            {JSON.stringify(
-              {
-                // user: user,
-                // isSignedIn: isSignedIn,
-                content: result
-              },
-              null,
-              2
-            )}
-          </div>
-        </div>
-      </div> */}
+      
+      {loading ? (
+        <p>Loading checklist...</p>
+      ) : (
+        <ul className="list-none space-y-2">
+          {checklistItems.map(item => (
+            <li key={item.id} className="flex items-center">
+              <input 
+                type="checkbox" 
+                id={item.name}
+                checked={item.isChecked}
+                onChange={(e) => handleCheckboxChange(item.name, e.target.checked)}
+                className="mr-2" 
+              />
+              <label htmlFor={item.name}>
+                {item.name === 'auth' && 'Clerk Authentication'}
+                {item.name === 'prisma' && 'Prisma ORM'}
+                {item.name === 'sqlite' && 'SQLite Database'}
+                {item.name === 'multitenancy' && 'Multi-tenancy'}
+                {item.name === 'square' && 'Square API Payments'}
+                {item.name === 'timer' && '24-hour Timer Countdown after $1 USD Payment'}
+                {item.name === 'pinecone' && 'Pinecone Integration'}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
-
