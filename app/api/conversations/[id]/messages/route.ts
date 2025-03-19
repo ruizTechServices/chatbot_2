@@ -52,7 +52,7 @@ export async function POST(
     }));
 
     const openaiResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/openai/conversation`,
+      new URL('/api/openai/conversation', request.url),
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
