@@ -4,15 +4,18 @@ import { auth } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest, context: { params: { id: string } }) {
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Extract the id from the context object.
-    const { id } = context.params;
+    // Await the asynchronous params before destructuring.
+    const { id } = await context.params;
     const { message, model } = await request.json();
 
     const conversation = await prisma.conversation.findFirst({
