@@ -136,21 +136,37 @@ export default function ChatPage() {
         const data = await res.json();
         setConversations(prev => [data, ...prev]);
         setActiveConversationId(data.id);
+        
+        // Add user message to chat after conversation is created
+        const userMessage: Message = { role: "user", content: input };
+        setMessages(prev => [...prev, userMessage]);
+        setInput("");
+        setLoading(true);
+        
+        // Send message to API with the new conversation ID
+        await sendMessageToApi(data.id, userMessage);
+        return;
       } catch (error) {
         console.error("Error creating conversation:", error);
         return;
       }
     }
 
-    // Add user message to chat
+    // Add user message to chat when a conversation already exists
     const userMessage: Message = { role: "user", content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setLoading(true);
 
+    // Send message to API
+    await sendMessageToApi(activeConversationId, userMessage);
+  }
+  
+  // Helper function to send messages to the API
+  async function sendMessageToApi(conversationId: string, userMessage: Message) {
     try {
       // Send message to API
-      const res = await fetch(`/api/conversations/${activeConversationId}/messages`, {
+      const res = await fetch(`/api/conversations/${conversationId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -169,7 +185,7 @@ export default function ChatPage() {
         // Update conversation in sidebar
         setConversations(prev => 
           prev.map(conv => 
-            conv.id === activeConversationId 
+            conv.id === conversationId 
               ? { ...conv, title: data.title || conv.title, updatedAt: new Date().toISOString() } 
               : conv
           )
@@ -183,6 +199,7 @@ export default function ChatPage() {
   }
 
   if (!isSignedIn) {
+    //I also need to implement payment here. This is '24HourGPT`, so the user would pay $1 USD for 24 Hours of usage of the chat bot. Then, the user is prompted for their chat history to be exported as a JSON file or, to pay monthly for a database storage at $20 a month. If they choose the file method, after 24 hours of use, a JSON file would be generated and available for download for the user for 24 more hours or until the next session. If they choose the monthly method, the user would be prompted to pay $20 a month for database storage. Then, the user would be redirected to the chatbot after confirming that use is logged in. The chatbot is used accordingly. I have to implement tracking to see how users use the chatbot. I need to implement this without being too invasive. Like, tracking users based on behavior and usage of the chatbot, not the content of the chatbot, unless explicitly authorized. 
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <p className="mb-4">Please sign in to use the chat</p>

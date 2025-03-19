@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -17,8 +17,6 @@ export async function POST(
     
     const { message, model } = await request.json();
     
-    // Destructure params inside the function body
-    const { params } = context;
     const { id } = params;
     
     // Verify that the conversation belongs to the user

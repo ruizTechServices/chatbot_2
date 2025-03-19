@@ -117,3 +117,12 @@ export default function Home() {
     </div>
   );
 }
+
+
+////TO DO LIST March 11, 2025 11:59am
+//Implement payment
+//Implement chat history export
+//Implement monthly database storage
+//Implement tracking
+//Implement analytics
+//Implement user feedback

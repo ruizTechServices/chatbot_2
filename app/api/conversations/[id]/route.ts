@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -15,7 +15,6 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { params } = context;
     const { id } = params;
     
     const conversation = await prisma.conversation.findUnique({
@@ -45,7 +44,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -53,8 +52,6 @@ export async function DELETE(
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const { params } = context;
     
     // First verify the conversation belongs to the user
     const conversation = await prisma.conversation.findUnique({
@@ -81,7 +78,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth();
@@ -91,8 +88,6 @@ export async function PATCH(
     }
     
     const { title } = await request.json();
-    
-    const { params } = context;
     
     // First verify the conversation belongs to the user
     const conversation = await prisma.conversation.findUnique({
