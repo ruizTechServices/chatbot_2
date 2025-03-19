@@ -11,7 +11,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { id } = await params;
+    const { id } = params;
     const { message, model } = await request.json();
     const conversation = await prisma.conversation.findFirst({
       where: { id, userId }
