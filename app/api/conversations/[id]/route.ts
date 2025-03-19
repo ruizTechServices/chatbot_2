@@ -15,7 +15,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { id } = params;
+    const { id } = await params;//L.R. Says: Leave this as is!!!!, I am getting an issue mentioning that params should be awaited before using its properties. `https://nextjs.org/docs/messages/sync-dynamic-apis`
     
     const conversation = await prisma.conversation.findUnique({
       where: { 
