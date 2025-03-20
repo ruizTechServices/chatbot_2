@@ -8,7 +8,13 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(response);
 }
 
-//This is a test endpoint to check if the API is working.
+
+
+
+
+
+
+//This is How to test endpoint on Postman to check if the API is working.
 // {
 //   "messages": [
 //     {
