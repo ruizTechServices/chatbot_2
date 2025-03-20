@@ -1,0 +1,3 @@
+<!-- Create a more modern, Manhattan-styled, luxurious, Saas Landing page. 
+
+The user can pay for the chatbot use for $1USD for 24 Hours. The chatbot does not retain chat history. So, at the end of the timer countdown, there would be a prompt that says if they would like to pay for Monthly for database services at $50 a month, or would they like to download a JSONL file with their chat history for later upload or otherwise.  -->
