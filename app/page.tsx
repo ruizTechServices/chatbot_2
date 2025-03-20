@@ -1,18 +1,22 @@
 'use client';
 import AuthSection from '@/components/main/AuthSection';
+import { useAuth, useUser } from '@clerk/nextjs';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 // import Timer from '@/components/main/CountDown';
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('features');
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
 
   // Animation on load
   useEffect(() => {
     setIsLoaded(true);
   }, []);
-  
-  
+
+
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-light">
@@ -66,7 +70,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522083165195-3424ed129620?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80')] bg-cover bg-center opacity-20"></div>
           <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black to-transparent"></div>
         </div>
-        
+
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl">
             <h1 className={`text-4xl md:text-6xl lg:text-7xl font-extralight leading-tight mb-6 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -77,12 +81,12 @@ export default function Home() {
               <span className="block mt-2">No subscriptions. No commitments.</span>
             </p>
             <div className={`flex flex-col sm:flex-row gap-6 transition-all duration-1000 delay-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <a
-                href="#"
+              <Link
+                href={user ? '/chat' : '/sign-in'}
                 className="px-8 py-4 bg-white text-black hover:bg-gray-200 text-lg font-light tracking-wider transition-all text-center"
               >
                 START NOW
-              </a>
+              </Link>
               <a
                 href="#features"
                 className="px-8 py-4 border border-gray-700 hover:border-white text-lg font-light tracking-wider transition-all text-center group"
@@ -168,7 +172,7 @@ export default function Home() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-700 to-amber-500 mx-auto mb-6"></div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="p-8 border border-gray-800 bg-black/20">
               <div className="flex items-center mb-6">
@@ -184,7 +188,7 @@ export default function Home() {
                 "The pay-as-you-go model is perfect for me. I only need AI assistance occasionally, and $1 for 24 hours is an incredible value."
               </p>
             </div>
-            
+
             <div className="p-8 border border-gray-800 bg-black/20">
               <div className="flex items-center mb-6">
                 <div className="mr-4 w-10 h-10 rounded-full bg-amber-900 flex items-center justify-center text-amber-500 font-semibold">
@@ -199,7 +203,7 @@ export default function Home() {
                 "I love the focus on privacy. Being able to download my chat history as a JSONL file gives me peace of mind that I won't lose important information."
               </p>
             </div>
-            
+
             <div className="p-8 border border-gray-800 bg-black/20">
               <div className="flex items-center mb-6">
                 <div className="mr-4 w-10 h-10 rounded-full bg-amber-900 flex items-center justify-center text-amber-500 font-semibold">
@@ -229,7 +233,7 @@ export default function Home() {
             Choose between pay-as-you-go or our premium monthly plan with full data retention and advanced features.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <div className="border border-gray-800 bg-black/30 p-10 transition-all hover:transform hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-900/10">
             <div className="flex justify-between items-start mb-6">
@@ -275,14 +279,21 @@ export default function Home() {
                 <span className="text-gray-500">No advanced features</span>
               </li>
             </ul>
-            <a
-              href="#"
-              className="block w-full py-3 border border-amber-700 text-center font-light tracking-wider hover:bg-amber-900/20 transition-all"
-            >
-              START NOW
-            </a>
+
+            {isSignedIn ? (
+              <>
+                <Link
+                  href="/chat"
+                  className="block w-full py-3 border border-amber-700 text-center font-light tracking-wider hover:bg-amber-900/20 transition-all"
+                >
+                  START NOW
+                </Link>
+              </>
+            ) : (
+              <Link className="px-6 py-2 text-sm tracking-wider uppercase border border-gray-700 hover:border-white transition-all" href="/sign-in">Start Now</Link>
+            )}
           </div>
-          
+
           <div className="border border-gray-800 bg-gradient-to-br from-black to-[#0a0a0a] p-10 transition-all hover:transform hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-900/10">
             <h3 className="text-2xl font-light mb-1">Premium</h3>
             <p className="text-gray-500 mb-6">For power users</p>
@@ -341,7 +352,7 @@ export default function Home() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-700 to-amber-500 mx-auto mb-6"></div>
           </div>
-          
+
           <div className="max-w-3xl mx-auto">
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">Can I access my old conversations?</h3>
@@ -349,28 +360,28 @@ export default function Home() {
                 With the pay-as-you-go plan, conversations are not retained after your session ends unless you download them. With the monthly plan, all your conversations are securely stored and accessible anytime.
               </p>
             </div>
-            
+
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">What's included in the monthly plan?</h3>
               <p className="text-gray-400">
                 The $50/month premium plan includes unlimited AI usage, permanent chat history retention, advanced data analytics, priority support, and custom conversation organization tools.
               </p>
             </div>
-            
+
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">Can I use the exported JSONL file?</h3>
               <p className="text-gray-400">
                 Yes, the JSONL file contains your complete conversation in a standard format. You can re-upload it in a future session, use it with other compatible AI tools, or maintain your own archive.
               </p>
             </div>
-            
+
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">Is there a limit to how many messages I can send?</h3>
               <p className="text-gray-400">
                 No, both the daily and monthly plans offer unlimited messages. The only difference is in data retention and additional premium features.
               </p>
             </div>
-            
+
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">What happens when my 24-hour period ends?</h3>
               <p className="text-gray-400">
