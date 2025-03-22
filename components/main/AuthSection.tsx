@@ -8,6 +8,7 @@ export default function AuthSection() {
 
   return (
     <div className="flex items-center gap-4">
+      {/* I also have to implement payment processing */}
       {isSignedIn ? (
         <>
           <p className="hidden md:block">Welcome {user?.firstName ?? "User"} {user?.lastName ?? "Lastname"}</p>
@@ -21,3 +22,10 @@ export default function AuthSection() {
     </div>
   );
 }
+
+// When the user is signed in, the backend checks if there is a session going on
+// If there is, it returns the user to the chatbot
+// If there is no session, it returns a payment link to process the payment
+// If the payment is successful, it creates a new session and returns the user to the chatbot
+// If the payment fails, it returns an error message
+// If the user is not signed in, it returns a sign-in link

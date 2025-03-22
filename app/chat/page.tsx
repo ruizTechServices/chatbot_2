@@ -235,19 +235,18 @@ export default function ChatPage() {
 
   // Handle export of chat history
   const handleExportChat = () => {
-    // Create JSONL file from all conversations
-    const jsonData = conversations.flatMap(conversation => {
-      return conversation.messages?.map(msg => JSON.stringify({
-        conversation_id: conversation.id,
-        conversation_title: conversation.title,
-        timestamp: new Date().toISOString(),
-        role: msg.role,
-        content: msg.content
-      })) || [];
-    }).join('\n');
+    if (!activeConversationId) return;
+    const activeConversation = conversations.find(c => c.id === activeConversationId);
+    const jsonData = messages.map(msg => JSON.stringify({
+      conversation_id: activeConversation?.id,
+      conversation_title: activeConversation?.title || "New Conversation",
+      timestamp: new Date().toISOString(),
+      role: msg.role,
+      content: msg.content
+    })).join('\n');
 
     // Create download link
-    const blob = new Blob([jsonData], { type: 'application/jsonl' });
+    const blob = new Blob([jsonData], { type: 'application/jsonl' });//This has to be the current conversation the user is viewing in the frontend
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
