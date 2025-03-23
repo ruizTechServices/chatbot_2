@@ -246,7 +246,7 @@ export default function ChatPage() {
     })).join('\n');
 
     // Create download link
-    const blob = new Blob([jsonData], { type: 'application/jsonl' });//This has to be the current conversation the user is viewing in the frontend
+    const blob = new Blob([jsonData], { type: 'application/jsonl' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

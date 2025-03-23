@@ -1,15 +1,28 @@
+//app/page.tsx
 'use client';
 import AuthSection from '@/components/main/AuthSection';
 import { useAuth, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 // import Timer from '@/components/main/CountDown';
+// import { createClient } from '@/utils/square/client';
+
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('features');
   const { isSignedIn } = useAuth();
   const { user } = useUser();
+
+  // Initialize Square client
+  // useEffect(() => {
+  //   const squareClient = createClient();
+  //   // You can now use squareClient for payment processing
+  //   // For example, you can create a payment request here
+  //   console.log('Square client initialized:', squareClient);
+  //   console.log("APP ID:", process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID);
+  //   console.log("LOCATION ID:", process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID);
+  // }, []);
 
   // Animation on load
   useEffect(() => {
