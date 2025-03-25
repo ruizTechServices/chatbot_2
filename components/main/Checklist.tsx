@@ -69,15 +69,19 @@ export default function Checklist() {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline mb-4">
+    <div className="p-6 bg-white shadow-md rounded-lg max-w-md mx-auto mt-10 h-screen overflow-y-auto">
+      <h1 className="text-3xl font-bold underline mb-4 text-center">
         24HourGPT Features Checklist
       </h1>
       
       {loading ? (
         <p>Loading checklist...</p>
       ) : (
-        <ul className="list-none space-y-2">
+        <ul className="list-none space-y-2 divide-y divide-gray-200">
+          {/* Render each checklist item */}
+          {checklistItems.length === 0 && (
+            <p className="text-center text-gray-500">No items found.</p>
+          )}
           {checklistItems.map(item => (
             <ChecklistItemComponent 
               key={item.id} 
