@@ -18,7 +18,7 @@ export default function Home() {
   // useEffect(() => {
   //   const squareClient = createClient();
   //   // You can now use squareClient for payment processing
-  //   // For example, you can create a payment request here
+  //   // For example, you can create Link payment request here
   //   console.log('Square client initialized:', squareClient);
   //   console.log("APP ID:", process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID);
   //   console.log("LOCATION ID:", process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID);
@@ -42,27 +42,34 @@ export default function Home() {
             </span>
           </div>
           <div className="hidden md:flex space-x-12">
-            <a
+            <Link
+              href="https://app.termly.io/policy-viewer/policy.html?policyUUID=26d1bfd9-c152-4fd2-9cee-b6c2fd65a535"
+              onClick={() => setActiveTab('private-policy')}
+              className={`hover:text-gray-300 transition-colors text-sm tracking-widest uppercase ${activeTab === 'home' ? 'text-white border-b border-amber-500' : 'text-gray-400'}`}
+            >
+              Private Policy
+            </Link>
+            <Link
               href="#features"
               onClick={() => setActiveTab('features')}
               className={`hover:text-gray-300 transition-colors text-sm tracking-widest uppercase ${activeTab === 'features' ? 'text-white border-b border-amber-500' : 'text-gray-400'}`}
             >
               Features
-            </a>
-            <a
+            </Link>
+            <Link
               href="#pricing"
               onClick={() => setActiveTab('pricing')}
               className={`hover:text-gray-300 transition-colors text-sm tracking-widest uppercase ${activeTab === 'pricing' ? 'text-white border-b border-amber-500' : 'text-gray-400'}`}
             >
               Pricing
-            </a>
-            <a
+            </Link>
+            <Link
               href="#faq"
               onClick={() => setActiveTab('faq')}
               className={`hover:text-gray-300 transition-colors text-sm tracking-widest uppercase ${activeTab === 'faq' ? 'text-white border-b border-amber-500' : 'text-gray-400'}`}
             >
               FAQ
-            </a>
+            </Link>
           </div>
           <div className="flex space-x-4">
             <AuthSection />
@@ -100,13 +107,13 @@ export default function Home() {
               >
                 START NOW
               </Link>
-              <a
+              <Link
                 href="#features"
                 className="px-8 py-4 border border-gray-700 hover:border-white text-lg font-light tracking-wider transition-all text-center group"
               >
                 LEARN MORE
                 <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">→</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -121,7 +128,7 @@ export default function Home() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-amber-700 to-amber-500 mb-6"></div>
             <p className="text-gray-400 mb-8">
-              Access our advanced AI assistant with a simple pricing model that respects your privacy and budget.
+              Access our advanced AI assistant with Link simple pricing model that respects your privacy and budget.
             </p>
             {/* <Timer/> */}
           </div>
@@ -157,7 +164,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-light mb-3">Export Your Data</h3>
                 <p className="text-gray-400">
-                  Download your chat history as a JSONL file at any time to save your valuable conversations.
+                  Download your chat history as Link JSONL file at any time to save your valuable conversations.
                 </p>
               </div>
               <div className="p-8 border border-gray-800 bg-black/30 hover:bg-black/50 transition-all duration-300">
@@ -213,7 +220,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "I love the focus on privacy. Being able to download my chat history as a JSONL file gives me peace of mind that I won't lose important information."
+                "I love the focus on privacy. Being able to download my chat history as Link JSONL file gives me peace of mind that I won't lose important information."
               </p>
             </div>
 
@@ -228,7 +235,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "The monthly plan is worth every penny. Having my chat history retained saves me countless hours of repeating information. The advanced features are just a bonus."
+                "The monthly plan is worth every penny. Having my chat history retained saves me countless hours of repeating information. The advanced features are just Link bonus."
               </p>
             </div>
           </div>
@@ -346,12 +353,12 @@ export default function Home() {
                 <span className="text-gray-300">Custom chat organization</span>
               </li>
             </ul>
-            <a
+            <Link
               href="#"
               className="block w-full py-3 bg-gradient-to-r from-amber-700 to-amber-500 text-center font-light tracking-wider hover:from-amber-600 hover:to-amber-400 transition-all"
             >
               UPGRADE NOW
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -384,12 +391,12 @@ export default function Home() {
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">Can I use the exported JSONL file?</h3>
               <p className="text-gray-400">
-                Yes, the JSONL file contains your complete conversation in a standard format. You can re-upload it in a future session, use it with other compatible AI tools, or maintain your own archive.
+                Yes, the JSONL file contains your complete conversation in Link standard format. You can re-upload it in Link future session, use it with other compatible AI tools, or maintain your own archive.
               </p>
             </div>
 
             <div className="mb-8 border-b border-gray-800 pb-8">
-              <h3 className="text-xl font-light mb-4">Is there a limit to how many messages I can send?</h3>
+              <h3 className="text-xl font-light mb-4">Is there Link limit to how many messages I can send?</h3>
               <p className="text-gray-400">
                 No, both the daily and monthly plans offer unlimited messages. The only difference is in data retention and additional premium features.
               </p>
@@ -398,7 +405,7 @@ export default function Home() {
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">What happens when my 24-hour period ends?</h3>
               <p className="text-gray-400">
-                When your session expires, you'll be presented with options to extend for another 24 hours ($1), upgrade to a monthly plan ($50), or download your chat history as a JSONL file before it's deleted.
+                When your session expires, you'll be presented with options to extend for another 24 hours ($1), upgrade to Link monthly plan ($50), or download your chat history as Link JSONL file before it's deleted.
               </p>
             </div>
           </div>
