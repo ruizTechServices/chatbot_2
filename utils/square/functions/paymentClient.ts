@@ -2,31 +2,44 @@
 
 import { generateIdempotencyKey } from "../../functions/generateIdempotencyKey"; 
 
+interface PaymentData {
+    amount: string | number;
+    currency: string;
+    idempotencyKey: string;
+    sourceId: string;
+}
+
+interface PaymentResponse {
+    // Define the expected response structure
+    success: boolean;
+    data?: any;
+    error?: string;
+}
+
 // Generic function to call the API endpoint
-export async function createPayment(paymentData: {
-  amount: string | number;
-  currency: string;
-  idempotencyKey: string;
-  sourceId: string;
-}) {
-  try {
-    const response = await fetch("/api/square/payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(paymentData),
-    });
+export async function createPayment(paymentData: PaymentData): Promise<PaymentResponse> {
+    try {
+        const response = await fetch("/api/square/payment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(paymentData),
+        });
 
-    if (!response.ok) {
-      throw new Error("Payment creation failed.");
+        if (!response.ok) {
+            // Try to extract a detailed error message from the response
+            const errorInfo = await response.json().catch(() => null);
+            const errorMsg = errorInfo?.error || "Payment creation failed.";
+            throw new Error(errorMsg);
+        }
+
+        return await response.json() as PaymentResponse;
+    } catch (error: any) {
+        // Log the error details, optionally send to an external logging service
+        console.error("Error in createPayment:", error.message || error);
+        throw error;
     }
-
-    return await response.json();
-  } catch (error: any) {
-    // Optional: add logging or error handling here
-    throw error;
-  }
 }
 
 // Utility function for $1.00 premium access with 24-hour countdown
