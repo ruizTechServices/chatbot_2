@@ -7,12 +7,6 @@ const { ApiError, Client, Environment } = require('square');
 
 const prisma = new PrismaClient();
 
-// Define type for our raw query result
-type UserWithSquareCustomer = {
-  id: string;
-  squareCustomerId: string | null;
-};
-
 /**
  * Set up Square client based on environment
  */
@@ -68,23 +62,32 @@ export async function GET(req: NextRequest) {
     console.log('User ID:', userId);
 
     try {
-      // Get the user with Square customer ID
-      const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
-        SELECT id, "squareCustomerId"
+      // Define type for raw SQL query result
+      type UserWithSquare = {
+        id: string;
+        square_customer_id: string | null;
+      }
+
+      // Get the user with Square customer ID using Prisma ORM
+      const users = await prisma.$queryRaw<UserWithSquare[]>`
+        SELECT id, square_customer_id
         FROM users 
-        WHERE "clerkId" = ${userId} 
+        WHERE clerk_user_id = ${userId} 
         LIMIT 1
       `;
       
-      console.log('Database query result:', JSON.stringify(users || []));
+      console.log('Database query result:', users && users.length > 0 ? JSON.stringify({
+        id: users[0].id,
+        hasSquareId: !!users[0].square_customer_id
+      }) : 'No user found');
 
       // Check if we found a user and if they have a Square customer ID
-      if (!users || users.length === 0 || !users[0].squareCustomerId) {
+      if (!users || users.length === 0 || !users[0].square_customer_id) {
         console.log('No Square customer ID found for user');
         return NextResponse.json({ cards: [] });
       }
 
-      const squareCustomerId = users[0].squareCustomerId;
+      const squareCustomerId = users[0].square_customer_id;
       console.log('Found Square customer ID:', squareCustomerId);
 
       // Initialize Square client
@@ -157,16 +160,22 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: true, cardId });
     }
 
+    // Define type for raw SQL query result
+    type UserWithSquare = {
+      id: string;
+      square_customer_id: string | null;
+    }
+
     // Get the user with Square customer ID
-    const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
-      SELECT id, "squareCustomerId"
+    const users = await prisma.$queryRaw<UserWithSquare[]>`
+      SELECT id, square_customer_id
       FROM users 
-      WHERE "clerkId" = ${userId} 
+      WHERE clerk_user_id = ${userId} 
       LIMIT 1
     `;
 
     // Check if we found a user and if they have a Square customer ID
-    if (!users || users.length === 0 || !users[0].squareCustomerId) {
+    if (!users || users.length === 0 || !users[0].square_customer_id) {
       return NextResponse.json(
         { error: 'No saved cards found for this user' },
         { status: 404 }

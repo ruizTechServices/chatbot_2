@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 // Define type for our raw query result
 type UserWithSquareCustomer = {
   id: string;
-  squareCustomerId: string | null;
+  square_customer_id: string | null;
 };
 
 /**
@@ -113,70 +113,74 @@ export async function POST(req: NextRequest) {
       // First, try to find or create a customer record in Square
       let squareCustomerId = '';
       
-      // Check if we have a customer record for this user
-      const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
-        SELECT id, square_customer_id as "squareCustomerId" 
-        FROM users 
-        WHERE clerk_user_id = ${userId} 
-        LIMIT 1
-      `;
-      
-      if (users && users.length > 0 && users[0].squareCustomerId) {
-        squareCustomerId = users[0].squareCustomerId;
-        console.log(`Found existing Square customer ID: ${squareCustomerId}`);
-      } else {
-        // Get user details from Clerk
-        const userResponse = await fetch(
-          `https://api.clerk.dev/v1/users/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        if (!userResponse.ok) {
-          throw new Error('Failed to get user details from Clerk');
+      try {
+        // Define type for raw SQL query result
+        type UserWithSquare = {
+          id: string;
+          square_customer_id: string | null;
         }
+
+        // Check if the user already has a Square customer ID in our database
+        const users = await prisma.$queryRaw<UserWithSquare[]>`
+          SELECT id, square_customer_id
+          FROM users 
+          WHERE clerk_user_id = ${userId} 
+          LIMIT 1
+        `;
         
-        const userData = await userResponse.json();
-        
-        // Create customer in Square
-        const customerResponse = await client.customersApi.createCustomer({
-          givenName: userData.firstName || 'User',
-          familyName: userData.lastName || userId.substring(0, 8),
-          emailAddress: userData.emailAddresses?.[0]?.emailAddress || undefined,
-          referenceId: userId
-        });
-        
-        if (customerResponse.result.customer?.id) {
-          squareCustomerId = customerResponse.result.customer.id;
+        if (users && users.length > 0 && users[0].square_customer_id) {
+          // User already has a Square customer ID
+          console.log(`User has existing Square customer ID: ${users[0].square_customer_id}`);
+          squareCustomerId = users[0].square_customer_id;
+        } else {
+          // Create a new customer in Square
+          console.log('Creating new Square customer...');
           
-          // Save the Square customer ID to our database
+          const response = await client.customersApi.createCustomer({
+            idempotencyKey,
+            givenName: 'Customer',
+            familyName: '',
+            emailAddress: '',
+            referenceId: userId
+          });
+          
+          if (!response.result.customer?.id) {
+            throw new Error('Failed to create Square customer');
+          }
+          
+          squareCustomerId = response.result.customer.id;
+          
           if (users && users.length > 0) {
             // User exists but doesn't have a Square customer ID yet
             await prisma.$executeRaw`
               UPDATE users 
               SET square_customer_id = ${squareCustomerId} 
-              WHERE clerk_user_id = ${userId}
+              WHERE id = ${users[0].id}
             `;
           } else {
             // User doesn't exist in our database yet
-            await prisma.$executeRaw`
-              INSERT INTO users (id, clerk_user_id, email, square_customer_id, created_at) 
-              VALUES (
-                ${crypto.randomUUID()}, 
-                ${userId}, 
-                ${userData.emailAddresses?.[0]?.emailAddress || 'user@example.com'}, 
-                ${squareCustomerId}, 
-                ${new Date()}
-              )
-            `;
+            // Generate a unique ID for the new user
+            const newUserId = crypto.randomUUID();
+            const userEmail = 'user@example.com';
+            
+            try {
+              console.log('Creating new user with Square customer ID');
+              await prisma.$executeRaw`
+                INSERT INTO users (id, clerk_user_id, email, square_customer_id, created_at) 
+                VALUES (${newUserId}, ${userId}, ${userEmail}, ${squareCustomerId}, NOW())
+              `;
+              console.log('User created successfully');
+            } catch (dbError: any) {
+              console.error('Error creating user:', dbError);
+              throw new Error(`Failed to create user: ${dbError.message}`);
+            }
           }
           
           console.log(`Created new Square customer: ${squareCustomerId}`);
         }
+      } catch (error: any) {
+        console.error('Error finding or creating Square customer:', error);
+        throw error;
       }
       
       // Save the card for future use if requested
