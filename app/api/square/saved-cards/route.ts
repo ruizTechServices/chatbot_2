@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
     const userId = authResult?.userId;
     
     if (!userId) {
+      console.error('Unauthorized: No userId in auth result');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -61,42 +62,65 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Get the user with Square customer ID
-    const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
-      SELECT id, square_customer_id as "squareCustomerId" 
-      FROM users 
-      WHERE clerk_user_id = ${userId} 
-      LIMIT 1
-    `;
+    // Log for debugging
+    console.log('Production mode: Fetching saved cards');
+    console.log('Square Access Token exists:', !!process.env.SQUARE_ACCESS_TOKEN);
+    console.log('User ID:', userId);
 
-    // Check if we found a user and if they have a Square customer ID
-    if (!users || users.length === 0 || !users[0].squareCustomerId) {
-      return NextResponse.json({ cards: [] });
+    try {
+      // Get the user with Square customer ID
+      const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
+        SELECT id, square_customer_id as "squareCustomerId" 
+        FROM users 
+        WHERE clerk_user_id = ${userId} 
+        LIMIT 1
+      `;
+      
+      console.log('Database query result:', JSON.stringify(users || []));
+
+      // Check if we found a user and if they have a Square customer ID
+      if (!users || users.length === 0 || !users[0].squareCustomerId) {
+        console.log('No Square customer ID found for user');
+        return NextResponse.json({ cards: [] });
+      }
+
+      const squareCustomerId = users[0].squareCustomerId;
+      console.log('Found Square customer ID:', squareCustomerId);
+
+      // Initialize Square client
+      const client = getSquareClient();
+      
+      // Get customer's cards
+      console.log('Calling Square API to list cards');
+      const listCardsResponse = await client.cardsApi.listCards({
+        customerId: squareCustomerId
+      });
+      
+      console.log('Square API response:', listCardsResponse.result ? 'Success' : 'No result');
+
+      // Format card data for client
+      const cards = listCardsResponse.result.cards?.map((card: any) => ({
+        id: card.id,
+        last4: card.last4,
+        cardBrand: card.cardBrand,
+        expMonth: card.expMonth,
+        expYear: card.expYear,
+        cardholderName: card.cardholderName
+      })) || [];
+
+      console.log(`Found ${cards.length} cards for customer`);
+      return NextResponse.json({ cards });
+    } catch (dbError: any) {
+      console.error('Database or Square API error:', dbError);
+      console.error('Error stack:', dbError.stack);
+      return NextResponse.json(
+        { error: 'Database or Square API error', details: dbError.message },
+        { status: 500 }
+      );
     }
-
-    const squareCustomerId = users[0].squareCustomerId;
-
-    // Initialize Square client
-    const client = getSquareClient();
-    
-    // Get customer's cards
-    const listCardsResponse = await client.cardsApi.listCards({
-      customerId: squareCustomerId
-    });
-
-    // Format card data for client
-    const cards = listCardsResponse.result.cards?.map((card: any) => ({
-      id: card.id,
-      last4: card.last4,
-      cardBrand: card.cardBrand,
-      expMonth: card.expMonth,
-      expYear: card.expYear,
-      cardholderName: card.cardholderName
-    })) || [];
-
-    return NextResponse.json({ cards });
   } catch (error: any) {
     console.error('Failed to retrieve saved cards:', error);
+    console.error('Error stack:', error.stack);
     return NextResponse.json(
       { error: 'Failed to retrieve saved cards', details: error.message },
       { status: 500 }

@@ -14,9 +14,10 @@ type Card = {
 interface SavedCardsProps {
   onCardSelect: (cardId: string) => void;
   onNewCard: () => void;
+  onError?: () => void;
 }
 
-export function SavedCards({ onCardSelect, onNewCard }: SavedCardsProps) {
+export function SavedCards({ onCardSelect, onNewCard, onError }: SavedCardsProps) {
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,23 +28,32 @@ export function SavedCards({ onCardSelect, onNewCard }: SavedCardsProps) {
       try {
         setLoading(true);
         const response = await fetch('/api/square/saved-cards');
-        const data = await response.json();
         
+        // Check if response is ok before parsing JSON
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to load saved cards');
+          const errorText = await response.text();
+          console.error('Server responded with error:', response.status, errorText);
+          throw new Error(`Server error (${response.status}): Unable to load saved cards`);
         }
         
+        const data = await response.json();
         setCards(data.cards || []);
       } catch (err: any) {
         console.error('Error loading saved cards:', err);
-        setError(err.message || 'Failed to load saved cards');
+        // Set a user-friendly error message
+        setError('We encountered an issue loading your saved payment methods. You can continue with a new card.');
+        
+        // Notify parent component about the error
+        if (onError) {
+          onError();
+        }
       } finally {
         setLoading(false);
       }
     }
     
     fetchSavedCards();
-  }, []);
+  }, [onError]);
 
   const getCardIcon = (brand: string) => {
     switch (brand.toUpperCase()) {
@@ -106,8 +116,16 @@ export function SavedCards({ onCardSelect, onNewCard }: SavedCardsProps) {
 
   if (error) {
     return (
-      <div className="bg-red-900/30 border border-red-800 p-3 text-sm text-red-200 my-3">
-        {error}
+      <div className="space-y-4">
+        <div className="bg-red-900/30 border border-red-800 p-3 text-sm text-red-200 my-3">
+          {error}
+        </div>
+        <button
+          onClick={onNewCard}
+          className="w-full py-3 px-4 bg-gradient-to-r from-amber-700 to-amber-500 text-sm hover:from-amber-600 hover:to-amber-400 transition-all"
+        >
+          Continue with New Card
+        </button>
       </div>
     );
   }

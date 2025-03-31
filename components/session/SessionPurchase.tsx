@@ -17,6 +17,7 @@ export function SessionPurchase({ onSessionPurchased }: { onSessionPurchased: ()
   const [paymentForm, setPaymentForm] = useState<any>(null);
   const [paymentStep, setPaymentStep] = useState<'saved-cards' | 'new-card'>('saved-cards');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [cardLoadFailed, setCardLoadFailed] = useState(false);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   
   const router = useRouter();
@@ -81,13 +82,20 @@ export function SessionPurchase({ onSessionPurchased }: { onSessionPurchased: ()
   const handleNewCard = () => {
     setPaymentStep('new-card');
     setSelectedCardId(null);
+    setDebug('Switched to new card entry');
+  };
+
+  const handleCardLoadError = () => {
+    setCardLoadFailed(true);
+    setPaymentStep('new-card');
+    setDebug('Card loading failed, switched to new card entry');
   };
 
   const handlePurchase = async () => {
     setLoading(true);
     setError(null);
     setDebug('Processing payment...');
-
+    
     try {
       // Generate a unique idempotency key
       const idempotencyKey = `${Date.now()}_${Math.random().toString(36).substring(2)}`;
@@ -191,10 +199,11 @@ export function SessionPurchase({ onSessionPurchased }: { onSessionPurchased: ()
         </div>
       )}
       
-      {paymentStep === 'saved-cards' ? (
+      {paymentStep === 'saved-cards' && !cardLoadFailed ? (
         <SavedCards 
           onCardSelect={handleSavedCardSelect} 
-          onNewCard={handleNewCard} 
+          onNewCard={handleNewCard}
+          onError={handleCardLoadError}
         />
       ) : (
         <div className="space-y-3">
