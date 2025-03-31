@@ -1,0 +1,385 @@
+24HRGPT Product Requirements Document
+1. Document Information
+| Document Details | | |-----------------|------------------------| | Product Name | 24HRGPT | | Version | 1.0 | | Last Updated | March 30, 2025 | | Status | Draft | | Document Owner | Gio |
+
+2. Executive Summary
+24HRGPT is a premium AI assistant service offering high-quality conversational AI with a unique pay-as-you-go pricing model. For $1, users receive 24 hours of unlimited AI assistant access without subscription commitments. The application features a luxury-themed UI, privacy-focused architecture, and seamless conversation management to deliver exceptional value and user experience.
+
+3. Product Vision
+To provide premium AI assistant capabilities at an accessible price point, removing subscription barriers while maintaining top-tier quality and features.
+
+3.1 Target Audience
+Professionals seeking premium AI assistance without monthly commitments
+Occasional users who need high-quality AI help for specific projects
+Privacy-conscious users who prefer not to maintain ongoing subscriptions
+Users who value a luxury digital experience with sophisticated UI/UX
+3.2 Value Proposition
+Premium without the Premium Price: Access to advanced AI capabilities at $1/24hr
+No Commitment: Pay only when needed without subscription overhead
+Privacy-Focused: Optional history retention and data export capabilities
+Seamless Experience: Luxury interface with intuitive conversation management
+4. Current Implementation Status
+4.1 Implemented Features
+| Feature | Status | Details | |---------|--------|---------| | Next.js Framework | ✅ Complete | App Router architecture, proper route organization | | Authentication | ✅ Complete | Clerk integration, protected routes, login/signup flows | | Conversation UI | ✅ Complete | Chat interface, history, message scrolling | | Database Schema | ✅ Complete | Prisma models for conversations, messages, users | | Payment Integration | ✅ Complete | Square payment processing for $1 transactions | | Landing Page | ✅ Complete | Luxury-themed marketing page with features showcase |
+
+4.2 Partially Implemented Features
+| Feature | Status | Details | |---------|--------|---------| | Session Management | ⚠️ Partial | UI timer exists but lacks backend validation | | OpenAI Integration | ⚠️ Partial | Basic integration exists but needs consolidation | | Vector Embeddings | ⚠️ Partial | Schema supports embeddings but implementation incomplete | | Data Export | ⚠️ Partial | UI mentions export but functionality not complete | | Admin Dashboard | ⚠️ Partial | Basic page exists with minimal functionality | | Voice Capabilities | ⚠️ Partial | ElevenLabs client exists but no UI integration |
+
+5. Product Requirements
+5.1 Functional Requirements
+5.1.1 User Authentication & Session Management
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | AUTH-1 | Users must be able to sign up and login via Clerk auth | High | Complete | | AUTH-2 | System must protect routes for authenticated users only | High | Complete | | AUTH-3 | System must track 24-hour sessions after payment | High | Incomplete | | AUTH-4 | Users must see remaining time in current session | Medium | Partial | | AUTH-5 | System must prevent AI access after session expiration | High | Incomplete |
+
+5.1.2 Conversation Management
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | CONV-1 | Users must be able to create new conversations | High | Complete | | CONV-2 | System must display conversation history in sidebar | High | Complete | | CONV-3 | Users must be able to continue previous conversations | High | Complete | | CONV-4 | System must support multi-turn contextual conversations | High | Complete | | CONV-5 | Users must be able to search through conversation history | Medium | Incomplete |
+
+5.1.3 AI Capabilities
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | AI-1 | System must integrate with OpenAI for conversational AI | High | Complete | | AI-2 | System must maintain conversation context for responses | High | Complete | | AI-3 | System must generate embeddings for semantic search | Medium | Incomplete | | AI-4 | System must implement rate limiting for API usage | Medium | Incomplete | | AI-5 | System must track token usage for monitoring | Low | Incomplete |
+
+5.1.4 Payment Processing
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | PAY-1 | System must process $1 payments via Square | High | Complete | | PAY-2 | System must activate 24-hour session after payment | High | Incomplete | | PAY-3 | System must handle payment failures gracefully | Medium | Incomplete | | PAY-4 | System must provide payment receipt | Low | Incomplete | | PAY-5 | System must comply with payment regulations | High | Incomplete |
+
+5.1.5 Data Export
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | EXP-1 | Users must be able to export conversations as JSONL | Medium | Incomplete | | EXP-2 | System must handle large conversation exports | Medium | Incomplete | | EXP-3 | Users must be able to select conversations for export | Low | Incomplete |
+
+5.1.6 Admin Dashboard
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | ADMIN-1 | Admins must be able to view user statistics | Medium | Incomplete | | ADMIN-2 | Admins must be able to monitor system usage | Medium | Incomplete | | ADMIN-3 | Admins must be able to view revenue metrics | Medium | Incomplete | | ADMIN-4 | Admins must be able to manage user accounts | Low | Incomplete |
+
+5.2 Non-Functional Requirements
+5.2.1 Performance
+| Requirement ID | Requirement | Target | Status | |----------------|-------------|--------|--------| | PERF-1 | AI response time | < 3 seconds | Needs testing | | PERF-2 | Page load time | < 1.5 seconds | Needs testing | | PERF-3 | Maximum concurrent users | 1000+ | Needs testing | | PERF-4 | Database query performance | < 100ms | Needs testing |
+
+5.2.2 Security
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | SEC-1 | All API endpoints must be secured | High | Partial | | SEC-2 | User data must be encrypted at rest | High | Unknown | | SEC-3 | Payment information must not be stored | High | Complete | | SEC-4 | Authentication tokens must have appropriate expiry | Medium | Complete |
+
+5.2.3 Scalability
+| Requirement ID | Requirement | Priority | Status | |----------------|-------------|----------|--------| | SCALE-1 | System must handle growth to 10,000+ users | Medium | Unknown | | SCALE-2 | Database must scale with conversation volume | Medium | Unknown | | SCALE-3 | AI service must handle peak loads | High | Unknown |
+
+6. Technical Specifications
+6.1 Architecture
+CopyInsert
+24HRGPT
+├── Frontend (Next.js App Router)
+│   ├── Landing Page (/app/page.tsx)
+│   ├── Chat Interface (/app/chat/page.tsx)
+│   ├── Authentication (sign-in, sign-up)
+│   └── Admin Dashboard (/app/admin/page.tsx)
+├── Backend (Next.js API Routes)
+│   ├── Authentication (Clerk)
+│   ├── Conversation Management
+│   ├── AI Integration (OpenAI)
+│   ├── Payment Processing (Square)
+│   └── Data Export
+└── Database (PostgreSQL via Prisma)
+    ├── Users
+    ├── Conversations
+    ├── Messages
+    └── Sessions (to be implemented)
+6.2 Data Models
+Current Models
+prisma
+CopyInsert
+model Conversation {
+  id        String    @id @default(uuid())
+  title     String
+  userId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  positionId     Int
+  text           String
+  isUser         Boolean
+  embedding      Json?
+  createdAt      DateTime @default(now())
+}
+
+model User {
+  id            String   @id @default(uuid())
+  clerk_user_id String   @unique
+  email         String   @unique
+  createdAt     DateTime @default(now())
+}
+Required Model Additions
+prisma
+CopyInsert
+model UserSession {
+  id            String   @id @default(uuid())
+  userId        String
+  expiresAt     DateTime
+  paymentId     String
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  
+  @@index([userId, active])
+}
+
+model APIUsage {
+  id            String   @id @default(uuid())
+  userId        String
+  sessionId     String?
+  service       String   // "openai", "elevenlabs", etc.
+  endpoint      String
+  tokenCount    Int?
+  cost          Float
+  createdAt     DateTime @default(now())
+  
+  @@index([userId, service])
+}
+6.3 API Endpoints
+Current Endpoints
+/api/conversations - GET, POST
+/api/conversations/[id] - GET
+/api/conversations/[id]/messages - POST
+/api/openai/chat - POST
+/api/openai/conversation - POST
+/api/openai/embeddings - POST
+/api/square/payment - POST
+Required New Endpoints
+/api/sessions - GET, POST
+/api/sessions/validate - GET
+/api/conversations/[id]/export - GET
+/api/voice/transcribe - POST
+/api/voice/synthesize - POST
+/api/admin/users - GET
+/api/admin/analytics - GET
+/api/admin/usage - GET
+7. Implementation Roadmap
+7.1 Phase 1: Core System Stability (2 weeks)
+| Task | Description | Priority | Effort | |------|-------------|----------|--------| | Session DB Schema | Add UserSession model to Prisma schema | High | 1 day | | Session API | Implement session tracking endpoints | High | 3 days | | Payment-Session Link | Connect payment flow to session activation | High | 2 days | | Session Validation | Add middleware to validate active sessions | High | 2 days | | Auth Flow Review | Fix any auth flow issues and gaps | High | 2 days |
+
+7.2 Phase 2: AI Capability Enhancement (2 weeks)
+| Task | Description | Priority | Effort | |------|-------------|----------|--------| | AI Service | Create unified AI service for OpenAI integration | High | 3 days | | Token Tracking | Implement token usage tracking | Medium | 2 days | | Rate Limiting | Add rate limiting for API endpoints | Medium | 2 days | | Embeddings Pipeline | Complete the embeddings generation workflow | Medium | 3 days | | Vector Search | Implement semantic search with Pinecone | Medium | 3 days |
+
+7.3 Phase 3: User Experience Improvements (2 weeks)
+| Task | Description | Priority | Effort | |------|-------------|----------|--------| | Export API | Build JSONL export endpoint | Medium | 2 days | | Export UI | Complete export modal and user flow | Medium | 2 days | | Voice-to-Text | Implement audio transcription | Low | 3 days | | Text-to-Speech | Implement ElevenLabs integration for voice synthesis | Low | 3 days | | Audio UI | Create audio recording and playback components | Low | 4 days |
+
+7.4 Phase 4: Admin & Analytics (2 weeks)
+| Task | Description | Priority | Effort | |------|-------------|----------|--------| | User Management | Build admin user management interface | Medium | 3 days | | System Analytics | Implement analytics dashboard | Medium | 4 days | | API Monitoring | Add API usage monitoring | Medium | 3 days | | Revenue Reports | Create revenue reporting system | Medium | 3 days | | Alerts | Implement system alerts for critical events | Low | 1 day |
+
+8. Testing Strategy
+8.1 Unit Testing
+Core utility functions
+API endpoint logic
+Authentication flows
+Payment processing logic
+8.2 Integration Testing
+End-to-end conversation flow
+Payment to session activation pipeline
+User authentication and authorization
+Data export and import functionality
+8.3 Performance Testing
+Response time benchmarks
+Concurrent user simulation
+Database query optimization
+API rate limiting effectiveness
+9. Metrics and Success Criteria
+9.1 Key Performance Indicators
+| KPI | Target | Measurement Method | |-----|--------|-------------------| | User Retention | >30% return rate | Track returning users after first session | | Session Purchases | >2 per user/month | Monitor payment frequency | | AI Response Quality | >4.5/5 rating | In-app feedback prompt | | System Uptime | >99.9% | Infrastructure monitoring | | Average Response Time | <2 seconds | Backend timing metrics |
+
+9.2 Success Criteria
+Successfully process 1,000+ payments with 0% error rate
+Achieve 90%+ user satisfaction rating
+Scale to 10,000+ active users with no performance degradation
+Maintain AI response quality at premium level
+10. Risks and Mitigations
+| Risk | Impact | Probability | Mitigation | |------|--------|------------|------------| | OpenAI API costs increase | High | Medium | Implement strict token budgets, explore alternative models | | Payment processing failures | High | Low | Add redundant payment providers, robust error handling | | Data privacy concerns | High | Medium | Implement proper data retention policies, clear user options | | Session tracking errors | Medium | Medium | Add robust logging, monitoring and alerts | | Competitive pricing pressure | Medium | High | Add value-added features to differentiate from competitors |
+
+11. Open Issues and Decisions
+| Issue | Description | Options | Recommendation | |-------|-------------|---------|----------------| | Voice integration priority | Is voice capability a core feature? | 1. Prioritize in Phase 2
+2. Defer to later phase | Defer to Phase 3 - focus on core text functionality first | | Semantic search implementation | How deeply to integrate vector search? | 1. Light integration
+2. Deep integration | Start with light integration, measure usage, then expand if valuable | | Session extension | Should users be able to extend sessions? | 1. Fixed 24h only
+2. Allow extensions | Allow extensions, encouraging continued usage | | Data retention policy | How long to keep conversation data? | 1. Only during session
+2. Forever with opt-out | Default to session-only with opt-in for longer retention |
+
+12. Appendix
+12.1 Glossary
+Session: A 24-hour period of unlimited AI access after payment
+Conversation: A series of messages between the user and AI
+Embedding: Vector representation of text for semantic search
+JSONL: JSON Lines format for data export
+12.2 References
+Next.js Documentation
+OpenAI API Documentation
+Square Payment API Documentation
+Clerk Authentication Documentation
+Prisma ORM Documentation
+Document End-------
+
+24HRGPT Implementation To-Do List
+Phase 1: Core System Stability (Weeks 1-2)
+Week 1: Session Management & Authentication
+[ ] Day 1-2: Database Schema Updates
+[ ] Create UserSession model in Prisma schema
+[ ] Add indexes for performance optimization
+[ ] Run prisma migrate dev to apply changes
+[ ] Update Prisma client
+[ ] Day 3-4: Session API Endpoints
+[ ] Create /api/sessions GET endpoint to retrieve active session
+[ ] Create /api/sessions POST endpoint to create new sessions
+[ ] Implement /api/sessions/validate endpoint for session validation
+[ ] Write tests for session endpoints
+[ ] Day 5: Session Middleware
+[ ] Create middleware to validate active sessions
+[ ] Apply middleware to protected routes
+[ ] Handle session expiration gracefully
+[ ] Test middleware with expired sessions
+
+Week 2: Payment Integration & Session Activation
+[ ] Day 1-2: Payment Flow Enhancement
+[ ] Review existing Square payment integration
+[ ] Add idempotency key generation for payment reliability
+[ ] Implement payment success and failure handlers
+[ ] Connect payment success to session creation
+[ ] Day 3-4: Frontend Session UI
+[ ] Update timer component to use real session data
+[ ] Create session expiration UI (countdown, alerts)
+[ ] Implement session renewal flow in UI
+[ ] Add session status indicator in header
+[ ] Day 5: Testing & Bug Fixes
+[ ] Test full authentication flow
+[ ] Test payment to session activation pipeline
+[ ] Fix any identified issues
+[ ] Review and update documentation
+
+Phase 2: AI Capability Enhancement (Weeks 3-4)
+Week 3: AI Service Consolidation
+[ ] Day 1-2: Unified AI Service
+[ ] Create utils/ai/service.ts with core methods
+[ ] Consolidate existing OpenAI API calls
+[ ] Implement proper error handling
+[ ] Add timeout and retry mechanisms
+[ ] Day 3-4: Usage Tracking
+[ ] Create APIUsage model in Prisma schema
+[ ] Implement token counting functionality
+[ ] Create tracking middleware for AI requests
+[ ] Add cost calculation logic
+[ ] Day 5: Rate Limiting
+[ ] Implement rate limiting middleware
+[ ] Create configurable limits based on endpoint
+[ ] Add graceful handling for limit exceeding
+[ ] Test with high-volume simulated traffic
+
+Week 4: Vector Search Implementation
+[ ] Day 1-2: Embeddings Pipeline
+[ ] Update Pinecone client configuration
+[ ] Create background job for embedding generation
+[ ] Implement message storage with embeddings
+[ ] Test embedding generation with various inputs
+[ ] Day 3-4: Semantic Search
+[ ] Create /api/conversations/search endpoint
+[ ] Implement vector search functionality
+[ ] Add filtering by user and conversation
+[ ] Optimize search performance
+[ ] Day 5: Search UI
+[ ] Add search bar to conversation sidebar
+[ ] Implement search results display
+[ ] Add highlighting for matched content
+[ ] Test search with various queries
+
+Phase 3: User Experience Improvements (Weeks 5-6)
+Week 5: Data Export Functionality
+[ ] Day 1-2: Export API
+[ ] Create /api/conversations/[id]/export endpoint
+[ ] Implement JSONL format generation
+[ ] Add support for full conversation context
+[ ] Handle large conversation exports
+[ ] Day 3-4: Export UI
+[ ] Complete export modal component
+[ ] Add export option to conversation menu
+[ ] Implement download handling in UI
+[ ] Add export success/failure notifications
+[ ] Day 5: Import Functionality (Optional)
+[ ] Create conversation import endpoint
+[ ] Implement JSONL parsing logic
+[ ] Add import UI to conversation list
+[ ] Test with various import files
+Week 6: Voice Capabilities
+[ ] Day 1-2: Voice-to-Text
+[ ] Set up OpenAI Whisper integration
+[ ] Create /api/voice/transcribe endpoint
+[ ] Implement audio recording component
+[ ] Test with different audio inputs
+[ ] Day 3-4: Text-to-Speech
+[ ] Configure ElevenLabs integration
+[ ] Create /api/voice/synthesize endpoint
+[ ] Implement audio playback component
+[ ] Add voice selection options
+[ ] Day 5: Voice UI Integration
+[ ] Add voice input button to chat interface
+[ ] Implement voice output option for AI responses
+[ ] Create voice settings in user preferences
+[ ] Test full voice conversation flow
+
+Phase 4: Admin & Analytics (Weeks 7-8)
+Week 7: Admin Dashboard Core
+[ ] Day 1-2: User Management
+[ ] Create /api/admin/users endpoint
+[ ] Implement user listing and filtering
+[ ] Add user detail view
+[ ] Create user management controls
+[ ] Day 3-4: System Analytics
+[ ] Create /api/admin/analytics endpoint
+[ ] Implement data aggregation for key metrics
+[ ] Add charts and visualizations
+[ ] Create date range filtering
+[ ] Day 5: Access Controls
+[ ] Implement admin role checking
+[ ] Secure all admin endpoints
+[ ] Create admin invitation system
+[ ] Test with different user roles
+Week 8: Monitoring & Reporting
+[ ] Day 1-2: API Usage Monitoring
+[ ] Create /api/admin/usage endpoint
+[ ] Implement usage visualization
+[ ] Add service-specific breakdown
+[ ] Create cost analysis view
+[ ] Day 3-4: Revenue Reporting
+[ ] Create payment reporting endpoint
+[ ] Implement revenue dashboard
+[ ] Add export functionality for reports
+[ ] Create projections based on trends
+[ ] Day 5: Alert System
+[ ] Implement system alert mechanisms
+[ ] Create notification system for critical events
+[ ] Add email notifications for admins
+[ ] Test alert triggering and delivery
+
+Final Week: Polishing & Launch Preparation
+[ ] Day 1-2: Performance Optimization
+[ ] Run performance audit
+[ ] Optimize database queries
+[ ] Implement caching where beneficial
+[ ] Reduce bundle size
+[ ] Day 3-4: Testing
+[ ] Complete end-to-end testing
+[ ] Fix any remaining bugs
+[ ] Test across different devices
+[ ] Validate all critical user flows
+[ ] Day 5: Documentation & Launch
+[ ] Update user documentation
+[ ] Prepare launch announcement
+[ ] Configure analytics for launch
+[ ] Final review and sign-off
+
+Post-Launch Tasks
+[ ] Week 1: Monitoring & Hotfixes
+[ ] Monitor system performance
+[ ] Address any critical issues
+[ ] Gather initial user feedback
+[ ] Deploy hotfixes as needed
+[ ] Week 2: Feedback Analysis
+[ ] Analyze user behavior data
+[ ] Review feedback and support requests
+[ ] Identify improvement opportunities
+[ ] Plan next feature iterations
+[ ] Week 3-4: Feature Refinement
+[ ] Implement high-priority refinements
+[ ] A/B test UI improvements
+[ ] Optimize conversion funnel
+[ ] Plan next phase of development
