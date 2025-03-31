@@ -70,9 +70,9 @@ export async function GET(req: NextRequest) {
     try {
       // Get the user with Square customer ID
       const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
-        SELECT id, square_customer_id as "squareCustomerId" 
+        SELECT id, "squareCustomerId"
         FROM users 
-        WHERE clerk_user_id = ${userId} 
+        WHERE "clerkId" = ${userId} 
         LIMIT 1
       `;
       
@@ -159,9 +159,9 @@ export async function DELETE(req: NextRequest) {
 
     // Get the user with Square customer ID
     const users = await prisma.$queryRaw<UserWithSquareCustomer[]>`
-      SELECT id, square_customer_id as "squareCustomerId" 
+      SELECT id, "squareCustomerId"
       FROM users 
-      WHERE clerk_user_id = ${userId} 
+      WHERE "clerkId" = ${userId} 
       LIMIT 1
     `;
 
@@ -176,14 +176,23 @@ export async function DELETE(req: NextRequest) {
     // Initialize Square client
     const client = getSquareClient();
     
-    // Disable the card
-    await client.cardsApi.disableCard(cardId);
-
-    return NextResponse.json({ success: true, cardId });
+    // Delete the card
+    const response = await client.cardsApi.disableCard(cardId);
+    
+    if (!response.result) {
+      throw new Error('Failed to delete card');
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      cardId,
+      message: 'Card deleted successfully' 
+    });
   } catch (error: any) {
-    console.error('Failed to delete saved card:', error);
+    console.error('Failed to delete card:', error);
+    console.error('Error stack:', error.stack);
     return NextResponse.json(
-      { error: 'Failed to delete saved card', details: error.message },
+      { error: 'Failed to delete card', details: error.message },
       { status: 500 }
     );
   }
