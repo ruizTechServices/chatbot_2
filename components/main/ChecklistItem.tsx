@@ -15,7 +15,6 @@ export default function ChecklistItemComponent({ item, onChange }: ChecklistItem
       case 'prisma': return 'Prisma ORM';
       case 'sqlite': return 'SQLite Database';
       case 'multitenancy': return 'Multi-tenancy';
-      case 'square': return 'Square API Payments';
       case 'timer': return '24-hour Timer Countdown after $1 USD Payment';
       case 'pinecone': return 'Pinecone Integration';
       case 'langchain': return 'LangChain Integration';

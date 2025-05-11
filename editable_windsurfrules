@@ -9,7 +9,7 @@ $1 → 24-hour GPT-4o chat.  No subscription.  Luxury UI.  Privacy-first
 /* ───────────────────────── 2 · Status tables ───────────────────── */
 implemented = ✅, partial = ⚠, missing = ❌
 FEATURES = {
-  nextjs:✅, auth:✅, chat_ui:✅, prisma_base:✅, square:$1✅, landing:✅,
+  nextjs:✅, auth:✅, chat_ui:✅, prisma_base:✅, landing:✅,
   session_back:✅, openai_unify:✅, embeddings:✅, export:❌,
   admin_dash:❌, voice_io:❌
 }
@@ -17,7 +17,6 @@ FUN_REQ = {
   AUTH_1:✅, AUTH_2:✅, AUTH_3:✅, AUTH_4:✅, AUTH_5:✅,
   CONV_1-4:✅, CONV_5:❌,
   AI_1-2:✅, AI_3-5:❌,
-  PAY_1:✅, PAY_2:✅, PAY_3-5:❌,
   EXP_1-3:❌,
   ADMIN_1-4:❌
 }
@@ -36,7 +35,7 @@ need_endpoints = [
 
 /* ───────────────────────── 4 · Roadmap (8 wks) ─────────────────── */
 PHASES = [
-  P1_Core(2w): sessions+middleware+pay-link,
+  P1_Core(2w): sessions+middleware,
   P2_AI(2w): unify_openai, token_meter, rate_limit, embeddings+search,
   P3_UX(2w): JSONL export, voice_io (Whisper+ElevenLabs),
   P4_Admin(2w): dash, analytics, alerts

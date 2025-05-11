@@ -1,8 +1,16 @@
-///Users/gios_laptop/chatbot_2/utils/openai/client.ts
+//utils/openai/client.ts
 import OpenAI from 'openai';
 
+// Provide a fallback API key or placeholder for development
+const apiKey = process.env.OPENAI_API_KEY || 'placeholder-key-update-env-file';
+
+// Create OpenAI client with error handling
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey,
+  // Default configuration
+  defaultHeaders: {
+    'Content-Type': 'application/json',
+  }
 });
 
-export default openai;
+export default openai;  

@@ -3,20 +3,6 @@
  * with session management and payment processing
  */
 
-// Check if environment variables are properly loaded
-export function checkSquareEnvVariables() {
-  const variables = {
-    NEXT_PUBLIC_SQUARE_ACCESS_TOKEN: process.env.NEXT_PUBLIC_SQUARE_ACCESS_TOKEN,
-    NEXT_PUBLIC_SQUARE_APPLICATION_ID: process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
-    NEXT_PUBLIC_SQUARE_LOCATION_ID: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
-  };
-
-  console.log('Square Environment Variables:', variables);
-  
-  return variables;
-}
-
 // Check the current session status from the API
 export async function checkSessionStatus() {
   try {

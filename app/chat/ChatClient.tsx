@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { useSession } from "@/components/session/SessionProvider";
 import SidebarTimer from "@/components/session/SidebarTimer";
 
 // Type definitions
@@ -31,13 +30,33 @@ export default function ChatClient({ userId }: { userId: string }) {
   const [showExportModal, setShowExportModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Get session information from provider
-  const { isSessionActive, loading: sessionLoading } = useSession();
+  // Fetch all conversations for the user
+  const fetchConversations = useCallback(async () => {
+    try {
+      const response = await fetch("/api/conversations");
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversations");
+      }
+      const data = await response.json();
+      const convos = data.conversations || [];
+      setConversations(convos);
+      
+      // Set active conversation to the most recent one if available
+      if (convos.length > 0 && !activeConversationId) {
+        const mostRecent = convos.sort((a: Conversation, b: Conversation) => 
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )[0];
+        setActiveConversationId(mostRecent.id);
+      }
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  }, [activeConversationId, setActiveConversationId, setConversations]);
 
   // Load conversations on initial render
   useEffect(() => {
     fetchConversations();
-  }, []);
+  }, [fetchConversations]);
 
   // Update messages when active conversation changes
   useEffect(() => {
@@ -57,33 +76,6 @@ export default function ChatClient({ userId }: { userId: string }) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
-  // Format time for display
-  const formatTime = (value: number) => {
-    return value.toString().padStart(2, '0');
-  };
-
-  // Fetch all conversations for the user
-  const fetchConversations = async () => {
-    try {
-      const response = await fetch("/api/conversations");
-      if (!response.ok) {
-        throw new Error("Failed to fetch conversations");
-      }
-      const data = await response.json();
-      setConversations(data.conversations || []);
-      
-      // Set active conversation to the most recent one if available
-      if (data.conversations.length > 0 && !activeConversationId) {
-        const mostRecent = data.conversations.sort((a: Conversation, b: Conversation) => 
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        )[0];
-        setActiveConversationId(mostRecent.id);
-      }
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-    }
-  };
 
   // Create a new conversation
   const createNewConversation = async () => {
@@ -116,11 +108,6 @@ export default function ChatClient({ userId }: { userId: string }) {
     e.preventDefault();
 
     if (!input.trim() || loading) return;
-
-    // Check if we have an active session before sending the message
-    if (!isSessionActive && !sessionLoading) {
-      return; // The SessionProvider will show the purchase modal
-    }
 
     // Create a conversation if one doesn't exist
     if (!activeConversationId) {
@@ -377,11 +364,11 @@ export default function ChatClient({ userId }: { userId: string }) {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
                 className="flex-1 p-3 bg-[#111111] border border-gray-800 rounded-sm focus:outline-none focus:border-amber-700 text-white placeholder-gray-500"
-                disabled={loading || (!isSessionActive && !sessionLoading)}
+                disabled={loading}
               />
               <button
                 type="submit"
-                disabled={loading || !input.trim() || (!isSessionActive && !sessionLoading)}
+                disabled={loading || !input.trim()}
                 className="p-3 bg-gradient-to-r from-amber-700 to-amber-500 rounded-sm hover:from-amber-600 hover:to-amber-400 transition-all disabled:opacity-50 disabled:from-gray-700 disabled:to-gray-700"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

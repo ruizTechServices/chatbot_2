@@ -205,7 +205,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "The pay-as-you-go model is perfect for me. I only need AI assistance occasionally, and $1 for 24 hours is an incredible value."
+                &ldquo;The pay-as-you-go model is perfect for me. I only need AI assistance occasionally, and $1 for 24 hours is an incredible value.&rdquo;
               </p>
             </div>
 
@@ -220,7 +220,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "I love the focus on privacy. Being able to download my chat history as Link JSONL file gives me peace of mind that I won't lose important information."
+                &ldquo;I love the focus on privacy. Being able to download my chat history as Link JSONL file gives me peace of mind that I won&rsquo;t lose important information.&rdquo;
               </p>
             </div>
 
@@ -235,7 +235,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "The monthly plan is worth every penny. Having my chat history retained saves me countless hours of repeating information. The advanced features are just Link bonus."
+                &ldquo;The monthly plan is worth every penny. Having my chat history retained saves me countless hours of repeating information. The advanced features are just Link bonus.&rdquo;
               </p>
             </div>
           </div>
@@ -288,13 +288,13 @@ export default function Home() {
               </li>
               <li className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 mr-3 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
                 <span className="text-gray-500">No chat history retention</span>
               </li>
               <li className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 mr-3 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
                 <span className="text-gray-500">No advanced features</span>
               </li>
@@ -382,7 +382,7 @@ export default function Home() {
             </div>
 
             <div className="mb-8 border-b border-gray-800 pb-8">
-              <h3 className="text-xl font-light mb-4">What's included in the monthly plan?</h3>
+              <h3 className="text-xl font-light mb-4">What&rsquo;s included in the monthly plan?</h3>
               <p className="text-gray-400">
                 The $50/month premium plan includes unlimited AI usage, permanent chat history retention, advanced data analytics, priority support, and custom conversation organization tools.
               </p>
@@ -405,7 +405,7 @@ export default function Home() {
             <div className="mb-8 border-b border-gray-800 pb-8">
               <h3 className="text-xl font-light mb-4">What happens when my 24-hour period ends?</h3>
               <p className="text-gray-400">
-                When your session expires, you'll be presented with options to extend for another 24 hours ($1), upgrade to Link monthly plan ($50), or download your chat history as Link JSONL file before it's deleted.
+                When your session expires, you&rsquo;ll be presented with options to extend for another 24 hours ($1), upgrade to Link monthly plan ($50), or download your chat history as Link JSONL file before it&rsquo;s deleted.
               </p>
             </div>
           </div>
