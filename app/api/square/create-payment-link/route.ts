@@ -47,7 +47,7 @@ export async function POST() {
     prePopulatedData: { buyerEmail: undefined },
     subscriptionPlanId: undefined,
     note: userId,
-  } as any;
+  };
 
   const { result } = await checkoutApi.createPaymentLink(body);
 
