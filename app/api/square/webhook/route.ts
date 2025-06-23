@@ -32,7 +32,19 @@ export async function POST(request: NextRequest) {
     return new NextResponse("Invalid signature", { status: 401 });
   }
 
-  let payload: any;
+  interface PaymentUpdatedEvent {
+  type: "payment.updated";
+  data: {
+    object: {
+      payment: {
+        status: string;
+        note?: string;
+      };
+    };
+  };
+}
+
+let payload: PaymentUpdatedEvent;
   try {
     payload = JSON.parse(rawBody);
   } catch {
