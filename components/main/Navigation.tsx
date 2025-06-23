@@ -1,6 +1,7 @@
 "use client";
 import AuthSection from "@/components/main/AuthSection";
 import { useAuth, useUser } from "@clerk/nextjs";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -10,10 +11,10 @@ import { useState, useEffect } from "react";
 export default function Navigation() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("features");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { isSignedIn: _isSignedIn } = useAuth();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { user: _user } = useUser();
+
+  // Clerk hooks
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -28,8 +29,11 @@ export default function Navigation() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <span className="text-2xl font-extralight tracking-wider">
-            24HR<span className="font-semibold">GPT</span>
+          24HR<span className="font-semibold">GPT</span>
           </span>
+           {isSignedIn && (
+             <span className="hidden lg:inline text-sm text-gray-400 ml-3">Hi, {user?.firstName ?? "User"}</span>
+           )}
         </div>
         <div className="hidden md:flex space-x-12">
           <Link
