@@ -1,8 +1,12 @@
 'use client';
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAuth, useUser, UserButton } from "@clerk/nextjs";
 
 export default function AuthSection() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const { isSignedIn } = useAuth();
   const { user } = useUser();
 
@@ -13,7 +17,31 @@ export default function AuthSection() {
         <>
           <p className="hidden md:block">Welcome {user?.firstName ?? "User"} {user?.lastName ?? "Lastname"}</p>
           <UserButton />
-          <Link className="px-6 py-2 text-sm tracking-wider uppercase bg-gradient-to-r from-amber-700 to-amber-500 hover:from-amber-600 hover:to-amber-400 transition-all shadow-lg" href="/chatbot_basic">Chatbot</Link>
+          <button
+            disabled={loading}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const res = await fetch("/api/square/create-payment-link", { method: "POST" });
+                const data = await res.json();
+                if (data.redirect) {
+                  router.push(data.redirect);
+                } else if (data.checkoutUrl) {
+                  window.location.href = data.checkoutUrl;
+                } else {
+                  alert("Unexpected response from payment API");
+                }
+              } catch (err) {
+                console.error(err);
+                alert("Payment initiation failed");
+              } finally {
+                setLoading(false);
+              }
+            }}
+            className="px-6 py-2 text-sm tracking-wider uppercase bg-gradient-to-r from-amber-700 to-amber-500 hover:from-amber-600 hover:to-amber-400 transition-all shadow-lg disabled:opacity-60"
+          >
+            {loading ? "Loading..." : "Chatbot"}
+          </button>
         </>
       ) : ( 
         <Link className="px-6 py-2 text-sm tracking-wider uppercase border border-gray-700 hover:border-white transition-all" href="/sign-in">Sign-In</Link>

@@ -44,7 +44,7 @@ export default function PricingSection() {
 
           {isSignedIn ? (
             <Link
-              href="/chat"
+              href="/chatbot_basic"
               className="block w-full py-3 border border-amber-700 text-center font-light tracking-wider hover:bg-amber-900/20 transition-all"
             >
               START NOW

@@ -46,7 +46,7 @@ export default function HeroSection() {
             }`}
           >
             <Link
-              href={user ? "/chat" : "/sign-in"}
+              href={user ? "/chatbot_basic" : "/sign-in"}
               className="px-8 py-4 bg-white text-black hover:bg-gray-200 text-lg font-light tracking-wider transition-all text-center"
             >
               START NOW
