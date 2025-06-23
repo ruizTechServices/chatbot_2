@@ -29,7 +29,7 @@ export default function Navigation() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <span className="text-2xl font-extralight tracking-wider">
-          24HR<span className="font-semibold">GPT</span>
+          24HouR<span className="font-semibold">GPT</span>
           </span>
            {isSignedIn && (
              <span className="hidden lg:inline text-sm text-gray-400 ml-3">Hi, {user?.firstName ?? "User"}</span>
