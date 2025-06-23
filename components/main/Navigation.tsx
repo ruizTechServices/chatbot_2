@@ -10,8 +10,10 @@ import { useState, useEffect } from "react";
 export default function Navigation() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("features");
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { isSignedIn: _isSignedIn } = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { user: _user } = useUser();
 
   useEffect(() => {
     setIsLoaded(true);

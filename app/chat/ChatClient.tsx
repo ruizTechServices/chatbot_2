@@ -5,6 +5,7 @@ import Sidebar from "@/components/chatbot_basic/Sidebar";
 import ChatHeader from "@/components/chatbot_basic/ChatHeader";
 import MessageList from "@/components/chatbot_basic/MessageList";
 import MessageInput from "@/components/chatbot_basic/MessageInput";
+import ExportModal from "@/components/chatbot_basic/ExportModal";
 import { Conversation, Message } from "@/components/chatbot_basic/types";
 
 
@@ -30,10 +31,10 @@ export default function ChatClient({ userId }: { userId: string }) {
       const data = await response.json();
       const convos = data.conversations || [];
       setConversations(convos);
-      
+
       // Set active conversation to the most recent one if available
       if (convos.length > 0 && !activeConversationId) {
-        const mostRecent = convos.sort((a: Conversation, b: Conversation) => 
+        const mostRecent = convos.sort((a: Conversation, b: Conversation) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         )[0];
         setActiveConversationId(mostRecent.id);
@@ -131,16 +132,16 @@ export default function ChatClient({ userId }: { userId: string }) {
 
       const data = await response.json();
       setMessages(prev => [...prev, data.response]);
-      
+
       // Update conversations list with latest message
       setConversations(prev =>
         prev.map(conv =>
           conv.id === activeConversationId
             ? {
-                ...conv,
-                messages: [...conv.messages, userMessage, data.response],
-                updatedAt: new Date(),
-              }
+              ...conv,
+              messages: [...conv.messages, userMessage, data.response],
+              updatedAt: new Date(),
+            }
             : conv
         )
       );
@@ -168,7 +169,7 @@ export default function ChatClient({ userId }: { userId: string }) {
     const jsonlContent = conversation.messages
       .map(msg => JSON.stringify(msg))
       .join("\n");
-    
+
     const blob = new Blob([jsonlContent], { type: "application/jsonl" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -199,7 +200,7 @@ export default function ChatClient({ userId }: { userId: string }) {
         <ChatHeader
           sidebarOpen={sidebarOpen}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-          onExport={handleExportChat}
+          onExport={() => setShowExportModal(true)}
           title={activeConversationId ? (conversations.find(c => c.id === activeConversationId)?.title || "Chat") : "New Conversation"}
         />
         <MessageList messages={messages} loading={loading} messagesEndRef={messagesEndRef} />
@@ -210,6 +211,12 @@ export default function ChatClient({ userId }: { userId: string }) {
           loading={loading}
         />
       </div>
+      {/* Export modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onConfirm={handleExportChat}
+      />
     </div>
   );
 }
