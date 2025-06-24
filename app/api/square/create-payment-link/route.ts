@@ -34,7 +34,17 @@ export async function POST() {
   // Square checkout link
   // Square SDK v^30 exposes `onlineCheckoutsApi` instead of `checkoutApi`
   // Fallback to whichever exists.
-  const checkoutClient = (squareClient as any).checkoutApi ?? squareClient.onlineCheckoutsApi;
+  // Square SDK v^30 exposes `onlineCheckoutsApi` instead of `checkoutApi`
+  // Narrow the type to avoid `any`
+  interface CheckoutClient {
+    createPaymentLink: (
+      body: CreatePaymentLinkRequest
+    ) => Promise<{ result: { paymentLink?: { url?: string } } }>;
+  }
+
+  const checkoutClient: CheckoutClient | undefined =
+    (squareClient as { checkoutApi?: CheckoutClient }).checkoutApi ??
+    (squareClient as { onlineCheckoutsApi?: CheckoutClient }).onlineCheckoutsApi;
   if (!checkoutClient) {
     console.error("Square SDK missing checkout client");
     return new Response("Payment not available", { status: 500 });
