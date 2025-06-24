@@ -34,21 +34,14 @@ export async function POST() {
   // Square checkout link
   // Square SDK v^30 exposes `onlineCheckoutsApi` instead of `checkoutApi`
   // Fallback to whichever exists.
-  // Square SDK v^30 exposes `onlineCheckoutsApi` instead of `checkoutApi`
-  // Narrow the type to avoid `any`
-  interface CheckoutClient {
-    createPaymentLink: (
-      body: CreatePaymentLinkRequest
-    ) => Promise<{ result: { paymentLink?: { url?: string } } }>;
-  }
-
-  const checkoutClient: CheckoutClient | undefined =
-    (squareClient as { checkoutApi?: CheckoutClient }).checkoutApi ??
-    (squareClient as { onlineCheckoutsApi?: CheckoutClient }).onlineCheckoutsApi;
-  if (!checkoutClient) {
-    console.error("Square SDK missing checkout client");
+  // Square Node SDK v^43 exposes the payment link creation under
+  // `client.checkout.paymentLinks.createPaymentLink`
+  const paymentLinksClient = squareClient.checkout?.paymentLinks;
+  if (!paymentLinksClient) {
+    console.error("Square SDK missing paymentLinks client (checkout.paymentLinks)");
     return new Response("Payment not available", { status: 500 });
   }
+
   const body: CreatePaymentLinkRequest = {
     idempotencyKey: generateIdempotencyKey(),
     quickPay: {
@@ -65,7 +58,7 @@ export async function POST() {
     note: userId,
   };
 
-    const { result } = await checkoutClient.createPaymentLink(body);
+    const { result } = await paymentLinksClient.createPaymentLink(body);
 
   return Response.json({ checkoutUrl: result.paymentLink?.url });
 }

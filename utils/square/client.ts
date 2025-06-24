@@ -1,9 +1,12 @@
-const { SquareClient, SquareEnvironment, SquareError } = require("square");
-require('dotenv').config()
+import { Client, Environment } from "square";
 
-const client = new SquareClient({
-  token: process.env.SQUARE_ACCESS_TOKEN,
-environment: process.env.SQUARE_LOCATION_ID,
+// Initializes Square client with correct SDK class and strong typing
+export const squareClient = new Client({
+  accessToken: process.env.SQUARE_ACCESS_TOKEN!,
+  environment:
+    process.env.NODE_ENV === "production"
+      ? Environment.Production
+      : Environment.Sandbox,
 });
 
-export default client;
+export default squareClient;
