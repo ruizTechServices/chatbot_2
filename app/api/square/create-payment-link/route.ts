@@ -32,7 +32,13 @@ export async function POST() {
   }
 
   // Square checkout link
-  const { checkoutApi } = squareClient;
+  // Square SDK v^30 exposes `onlineCheckoutsApi` instead of `checkoutApi`
+  // Fallback to whichever exists.
+  const checkoutClient = (squareClient as any).checkoutApi ?? squareClient.onlineCheckoutsApi;
+  if (!checkoutClient) {
+    console.error("Square SDK missing checkout client");
+    return new Response("Payment not available", { status: 500 });
+  }
   const body: CreatePaymentLinkRequest = {
     idempotencyKey: generateIdempotencyKey(),
     quickPay: {
@@ -49,7 +55,7 @@ export async function POST() {
     note: userId,
   };
 
-  const { result } = await checkoutApi.createPaymentLink(body);
+    const { result } = await checkoutClient.createPaymentLink(body);
 
   return Response.json({ checkoutUrl: result.paymentLink?.url });
 }

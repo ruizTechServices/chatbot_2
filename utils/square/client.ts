@@ -3,7 +3,7 @@ require('dotenv').config()
 
 const client = new SquareClient({
   token: process.env.SQUARE_ACCESS_TOKEN,
-  environment: SquareEnvironment.Sandbox,
+environment: process.env.SQUARE_LOCATION_ID,
 });
 
 export default client;
