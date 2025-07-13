@@ -1,10 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/utils/prisma";
 import squareClient from "@/utils/square/client";
+import type { Currency } from "square/api";
 // Local minimal request typing to satisfy eslint
 interface Money {
-  amount: number;
-  currency: string;
+  amount: bigint;
+  currency: Currency;
 }
 interface QuickPay {
   name: string;
@@ -46,7 +47,7 @@ export async function POST() {
     idempotencyKey: generateIdempotencyKey(),
     quickPay: {
       name: "24-Hour GPT Access",
-      priceMoney: { amount: 100, currency: "USD" }, // $1.00
+      priceMoney: { amount: 100n, currency: "USD" as Currency }, // $1.00
       locationId: process.env.SQUARE_LOCATION_ID!,
     },
     checkoutOptions: {
@@ -58,7 +59,7 @@ export async function POST() {
     note: userId,
   };
 
-    const { result } = await paymentLinksClient.createPaymentLink(body);
+  const result = await paymentLinksClient.create(body);
 
   return Response.json({ checkoutUrl: result.paymentLink?.url });
 }
