@@ -42,6 +42,13 @@ export async function POST() {
       : SquareEnvironment.Sandbox,
   });
 
+  // Determine the base URL for redirects. Falls back to localhost in dev or production domain otherwise.
+  const baseUrl =
+    process.env.NEXT_PUBLIC_URL ??
+    (process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://24hour.ai");
+
   // Access the payment links API correctly
   const { paymentLinks } = client.checkout;
 
@@ -54,7 +61,7 @@ export async function POST() {
         locationId: process.env.SQUARE_LOCATION_ID!,
       },
       checkoutOptions: {
-        redirectUrl: `${process.env.NEXT_PUBLIC_URL}/chatbot_basic`,
+        redirectUrl: `${baseUrl}/chatbot_basic`,
         askForShippingAddress: false,
       },
       note: userId,
