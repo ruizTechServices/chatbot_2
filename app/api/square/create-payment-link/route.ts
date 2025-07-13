@@ -45,7 +45,7 @@ export async function POST() {
         redirectUrl: `${baseUrl}/chatbot_basic`,
         askForShippingAddress: false,
       },
-      note: userId,
+      paymentNote: userId,
     });
     return NextResponse.json({ checkoutUrl: response.paymentLink?.url });
   } catch (error) {
