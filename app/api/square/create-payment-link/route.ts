@@ -1,17 +1,21 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/utils/prisma";
-import squareClient from "@/utils/square/client";
-import type { Currency } from "square/api";
+import { SquareClient, SquareEnvironment } from 'square';
+import { randomUUID } from 'crypto';
+import { NextResponse } from 'next/server';
+
 // Local minimal request typing to satisfy eslint
 interface Money {
   amount: bigint;
-  currency: Currency;
+  currency: string;
 }
+
 interface QuickPay {
   name: string;
   priceMoney: Money;
   locationId: string;
 }
+
 interface CreatePaymentLinkRequest {
   idempotencyKey: string;
   quickPay: QuickPay;
@@ -20,46 +24,44 @@ interface CreatePaymentLinkRequest {
   subscriptionPlanId?: string;
   note: string;
 }
-import { generateIdempotencyKey } from "@/utils/functions/generateIdempotencyKey";
 
 export async function POST() {
   const { userId } = await auth();
   if (!userId) return new Response("Unauthorized", { status: 401 });
 
-  // check existing session 
-  const session = await prisma.userSession.findUnique({ where: { userId }});
+  // check existing session
+  const session = await prisma.userSession.findUnique({ where: { userId } });
   if (session && session.expiresAt > new Date()) {
-    return Response.json({ redirect: "/chatbot_basic" });
+    return NextResponse.json({ redirect: "/chatbot_basic" });
   }
 
-  // Square checkout link
-  // Square SDK v^30 exposes `onlineCheckoutsApi` instead of `checkoutApi`
-  // Fallback to whichever exists.
-  // Square Node SDK v^43 exposes the payment link creation under
-  // `client.checkout.paymentLinks.createPaymentLink`
-  const paymentLinksClient = squareClient.checkout?.paymentLinks;
-  if (!paymentLinksClient) {
-    console.error("Square SDK missing paymentLinks client (checkout.paymentLinks)");
-    return new Response("Payment not available", { status: 500 });
+  const client = new SquareClient({
+    token: process.env.SQUARE_ACCESS_TOKEN,
+    environment: process.env.NODE_ENV === "production"
+      ? SquareEnvironment.Production
+      : SquareEnvironment.Sandbox,
+  });
+
+  // Access the payment links API correctly
+  const { paymentLinks } = client.checkout;
+
+  try {
+    const response = await paymentLinks.create({
+      idempotencyKey: randomUUID(),
+      quickPay: {
+        name: "24-Hour GPT Access",
+        priceMoney: { amount: 100n, currency: "USD" },
+        locationId: process.env.SQUARE_LOCATION_ID!,
+      },
+      checkoutOptions: {
+        redirectUrl: `${process.env.NEXT_PUBLIC_URL}/chatbot_basic`,
+        askForShippingAddress: false,
+      },
+      note: userId,
+    });
+    return NextResponse.json({ checkoutUrl: response.paymentLink?.url });
+  } catch (error) {
+    console.error('Square API Error:', error);
+    return new Response(JSON.stringify({ error: 'Square API Error', details: error }), { status: 500 });
   }
-
-  const body: CreatePaymentLinkRequest = {
-    idempotencyKey: generateIdempotencyKey(),
-    quickPay: {
-      name: "24-Hour GPT Access",
-      priceMoney: { amount: 100n, currency: "USD" as Currency }, // $1.00
-      locationId: process.env.SQUARE_LOCATION_ID!,
-    },
-    checkoutOptions: {
-      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/chatbot_basic`,
-    },
-    // Store Clerk userId so we can correlate on webhook
-    prePopulatedData: { buyerEmail: undefined },
-    subscriptionPlanId: undefined,
-    note: userId,
-  };
-
-  const result = await paymentLinksClient.create(body);
-
-  return Response.json({ checkoutUrl: result.paymentLink?.url });
 }
