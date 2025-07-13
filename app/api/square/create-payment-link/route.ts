@@ -4,26 +4,7 @@ import { SquareClient, SquareEnvironment } from 'square';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
 
-// Local minimal request typing to satisfy eslint
-interface Money {
-  amount: bigint;
-  currency: string;
-}
-
-interface QuickPay {
-  name: string;
-  priceMoney: Money;
-  locationId: string;
-}
-
-interface CreatePaymentLinkRequest {
-  idempotencyKey: string;
-  quickPay: QuickPay;
-  checkoutOptions: { redirectUrl: string };
-  prePopulatedData?: Record<string, unknown>;
-  subscriptionPlanId?: string;
-  note: string;
-}
+// Removed local interfaces (Money, QuickPay, CreatePaymentLinkRequest) since they were unused.
 
 export async function POST() {
   const { userId } = await auth();
