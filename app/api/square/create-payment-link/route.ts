@@ -18,8 +18,10 @@ export async function POST() {
 
   const client = new SquareClient({
     token: process.env.SQUARE_ACCESS_TOKEN,
-    // Force sandbox mode until production credentials are set up
-    environment: SquareEnvironment.Sandbox,
+    environment:
+      process.env.NODE_ENV === "production"
+        ? SquareEnvironment.Production
+        : SquareEnvironment.Sandbox,
   });
 
   // Determine the base URL for redirects. Falls back to localhost in dev or production domain otherwise.
