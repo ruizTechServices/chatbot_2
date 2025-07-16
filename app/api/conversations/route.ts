@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
+import { withSecurity } from '@/utils/security/middleware';
+import { ConversationSchema } from '@/utils/validation/schemas';
+import { cleanUserInput } from '@/utils/security/sanitize';
 
 const prisma = new PrismaClient();
 
@@ -50,40 +53,41 @@ export async function GET() {
  * POST /api/conversations
  * Create a new conversation for the authenticated user
  * Requires an active session
+ * Now includes Zod validation and security middleware
  */
-export async function POST(req: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export const POST = withSecurity(
+  ConversationSchema,
+  async (req: NextRequest, validatedData) => {
+    try {
+      const { userId } = await auth();
+      if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
 
-    const { title } = await req.json();
+      const { title } = validatedData;
+      const cleanTitle = cleanUserInput(title);
 
-    if (!title || typeof title !== 'string') {
-      return NextResponse.json({ error: 'Title is required and must be a string' }, { status: 400 });
+      console.log('Creating conversation for user:', userId);
+      
+      const newConversation = await prisma.conversation.create({
+        data: {
+          userId,
+          title: cleanTitle,
+        },
+      });
+      
+      console.log('Created new conversation:', newConversation.id);
+      return NextResponse.json(newConversation, { status: 201 });
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      let errorMessage = 'Failed to create conversation';
+      if (error instanceof Error) {
+          errorMessage = error.message;
+      }
+      return NextResponse.json(
+        { error: errorMessage }, 
+        { status: 500 }
+      );
     }
-
-    console.log('Creating conversation for user:', userId);
-    
-    const newConversation = await prisma.conversation.create({
-      data: {
-        userId,
-        title,
-      },
-    });
-    
-    console.log('Created new conversation:', newConversation.id);
-    return NextResponse.json(newConversation, { status: 201 });
-  } catch (error) {
-    console.error('Error creating conversation:', error);
-    let errorMessage = 'Failed to create conversation';
-    if (error instanceof Error) {
-        errorMessage = error.message;
-    }
-    return NextResponse.json(
-      { error: errorMessage }, 
-      { status: 500 }
-    );
   }
-}
+);
