@@ -14,7 +14,7 @@ export const POST = withSecurity(
   ChatRequestSchema,
   async (req: NextRequest, validatedData) => {
     try {
-      const { messages, model, temperature, max_tokens } = validatedData;
+      const { messages, model } = validatedData;
       
       const response = await generateChatResponse(messages, model);
       

@@ -8,7 +8,7 @@ export const POST = withSecurity(
   ImageRequestSchema,
   async (req: NextRequest, validatedData) => {
     try {
-      const { prompt, size, n } = validatedData;
+      const { prompt, size } = validatedData;
       const response = await generateImage(prompt, size);
       return NextResponse.json(response);
     } catch (error) {

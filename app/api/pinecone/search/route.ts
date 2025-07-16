@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { generateEmbeddings } from '@/utils/openai/functions/embeddings';
+
 import { getUserNamespace } from '@/utils/pinecone/client';
 import { withSecurity } from '@/utils/security/middleware';
 import { PineconeSearchSchema } from '@/utils/validation/schemas';
