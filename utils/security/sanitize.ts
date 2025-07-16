@@ -13,7 +13,7 @@ export function sanitizeHtml(dirty: string): string {
   return purify.sanitize(dirty, {
     ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li'],
     ALLOWED_ATTR: ['class'],
-    FORBID_SCRIPTS: true,
+
     FORBID_TAGS: ['script', 'object', 'embed', 'link', 'style', 'img', 'svg'],
   });
 }
