@@ -31,7 +31,8 @@ function getClientId(req: NextRequest): string {
   
   // Fall back to IP address
   const forwarded = req.headers.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0] : req.ip || 'unknown';
+  const directIp = req.headers.get('x-real-ip');
+  const ip = forwarded ? forwarded.split(',')[0] : directIp || 'unknown';
   return `ip:${ip}`;
 }
 
