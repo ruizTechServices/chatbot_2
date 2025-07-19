@@ -29,7 +29,7 @@ export async function POST() {
     process.env.NEXT_PUBLIC_URL ??
     (process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
-      : "https://24hour.ai");
+      : "https://24hourgpt.com");
 
   // Access the payment links API correctly
   const { paymentLinks } = client.checkout;
