@@ -28,10 +28,18 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Server mis-config", { status: 500 });
   }
 
-  let evt: any;
+  interface ClerkUserCreatedEvent {
+  type: "user.created";
+  data: {
+    id: string;
+    email_addresses?: { email_address: string }[];
+  };
+}
+
+let evt: ClerkUserCreatedEvent;
   try {
     const wh = new Webhook(webhookSecret);
-    evt = wh.verify(payload, svixHeaders);
+    evt = wh.verify(payload, svixHeaders) as ClerkUserCreatedEvent;
   } catch (err) {
     console.error("Clerk Webhook verification failed", err);
     return new NextResponse("Invalid signature", { status: 400 });
