@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@/utils/prisma";
+import { ensureUser } from "@/utils/user";
 
 const SIGNATURE_HEADER = "x-square-signature";
 
@@ -66,13 +67,16 @@ let payload: PaymentUpdatedEvent;
     return new NextResponse("Missing user id", { status: 200 });
   }
 
+  // Ensure local user exists and get internal UUID
+  const internalUserId = await ensureUser(clerkUserId);
+
   const startedAt = new Date();
   const expiresAt = new Date(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
   await prisma.userSession.upsert({
-    where: { userId: clerkUserId },
+    where: { userId: internalUserId },
     update: { startedAt, expiresAt },
-    create: { userId: clerkUserId, startedAt, expiresAt },
+    create: { userId: internalUserId, startedAt, expiresAt },
   });
 
   return new NextResponse("Session updated", { status: 200 });

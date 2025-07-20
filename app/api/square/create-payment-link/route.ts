@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { ensureUser } from "@/utils/user";
 import { prisma } from "@/utils/prisma";
 import { SquareClient, SquareEnvironment } from 'square';
 import { randomUUID } from 'crypto';
@@ -7,11 +8,14 @@ import { NextResponse } from 'next/server';
 // Removed local interfaces (Money, QuickPay, CreatePaymentLinkRequest) since they were unused.
 
 export async function POST() {
-  const { userId } = await auth();
-  if (!userId) return new Response("Unauthorized", { status: 401 });
+  const { userId: clerkId } = await auth();
+  if (!clerkId) return new Response("Unauthorized", { status: 401 });
+
+  // Make sure local User exists and get internal UUID
+  const internalUserId = await ensureUser(clerkId);
 
   // check existing session
-  const session = await prisma.userSession.findUnique({ where: { userId } });
+  const session = await prisma.userSession.findUnique({ where: { userId: internalUserId } });
   if (session && session.expiresAt > new Date()) {
     return NextResponse.json({ redirect: "/chatbot_basic" });
   }
@@ -46,7 +50,7 @@ export async function POST() {
         redirectUrl: `${baseUrl}/chatbot_basic`,
         askForShippingAddress: false,
       },
-      paymentNote: userId,
+      paymentNote: clerkId,
     });
     return NextResponse.json({ checkoutUrl: response.paymentLink?.url });
   } catch (error) {
