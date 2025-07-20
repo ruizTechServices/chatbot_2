@@ -9,15 +9,18 @@ datasource db {
 }
         
 
+/// Chat thread, belongs to a User
 model Conversation {
   id        String    @id @default(uuid())
   title     String
   userId    String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  Message[]
 }
 
+/// Individual chat message
 model Message {
   id             String   @id @default(uuid())
   conversationId String
@@ -28,6 +31,8 @@ model Message {
   embedding      Json?
   createdAt      DateTime @default(now())
 
+  @@index([conversationId, positionId])
+
   @@map("messages")
 }
 
@@ -36,6 +41,10 @@ model User {
   clerkId         String   @unique @map("clerk_user_id")
   email           String   @unique
   createdAt       DateTime @default(now())
+
+  // Relations
+  conversations Conversation[]
+  sessions      UserSession[]
 
   @@map("users")
 }
@@ -49,11 +58,15 @@ model ChecklistItem {
   @@map("checklist_items")
 }
 
+/// Paid usage window per user
 model UserSession {
   id          String   @id @default(cuid())
   userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   startedAt   DateTime @default(now())
   expiresAt   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([expiresAt])
 }
