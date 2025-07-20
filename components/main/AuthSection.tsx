@@ -22,8 +22,18 @@ export default function AuthSection() {
             onClick={async () => {
               setLoading(true);
               try {
-                const res = await fetch("/api/square/create-payment-link", { method: "POST" });
-                const data = await res.json();
+                // First check if an active session exists
+                const validateRes = await fetch("/api/sessions/validate");
+                if (validateRes.ok) {
+                  const validateData = await validateRes.json();
+                  if (validateData.valid) {
+                    router.push("/chatbot_basic");
+                    return;
+                  }
+                }
+                // Otherwise create a payment link
+                const paymentRes = await fetch("/api/square/create-payment-link", { method: "POST" });
+                const data = await paymentRes.json();
                 if (data.redirect) {
                   router.push(data.redirect);
                 } else if (data.checkoutUrl) {

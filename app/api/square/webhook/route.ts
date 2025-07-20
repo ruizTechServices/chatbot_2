@@ -66,12 +66,13 @@ let payload: PaymentUpdatedEvent;
     return new NextResponse("Missing user id", { status: 200 });
   }
 
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const startedAt = new Date();
+  const expiresAt = new Date(startedAt.getTime() + 24 * 60 * 60 * 1000);
 
   await prisma.userSession.upsert({
     where: { userId: clerkUserId },
-    update: { expiresAt },
-    create: { userId: clerkUserId, expiresAt },
+    update: { startedAt, expiresAt },
+    create: { userId: clerkUserId, startedAt, expiresAt },
   });
 
   return new NextResponse("Session updated", { status: 200 });
