@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.23",
     "@clerk/nextjs": "^6.12.1",
     "@pinecone-database/pinecone": "^5.0.2",
     "@prisma/client": "^6.4.1",
