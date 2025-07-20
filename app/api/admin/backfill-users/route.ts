@@ -14,9 +14,10 @@ export async function POST(req: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const clerk = new Clerk({ apiKey: process.env.CLERK_SECRET_KEY! });
+  const clerk = Clerk({ secretKey: process.env.CLERK_SECRET_KEY! });
   let imported = 0;
-  for await (const user of clerk.users.getUserList()) {
+  const users = await clerk.users.getUserList();
+  for (const user of users) {
     const email = user.emailAddresses?.[0]?.emailAddress;
     await prisma.user.upsert({
       where: { clerkId: user.id },
